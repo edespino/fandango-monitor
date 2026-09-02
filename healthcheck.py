@@ -100,7 +100,7 @@ def check_recent_run():
     last = stamps[-1]
     late = datetime.now(timezone.utc) - last.astimezone(timezone.utc) > RUN_GRACE
     line(WARN if late else OK,
-         f"Last check {ago(last)}" + (" — overdue, expected every 15 min" if late else ""))
+         f"Last check {ago(last)}" + (" — overdue" if late else ""))
 
 
 def check_state():
@@ -137,7 +137,10 @@ def check_state():
             line(OK, f"SEATS: {' + '.join(hit['seats'])} — "
                      f"{hit['theater']}, {hit['day']} {hit['time']}")
     else:
-        line(INFO, f"No pair matching rows {'/'.join(fm.TARGET_ROWS)} yet")
+        wanted = ", ".join(
+            f"{'/'.join(fm.target_rows(code))} at {fm.theater_name(code)}"
+            for code in fm.THEATERS)
+        line(INFO, f"No pair yet in {wanted}")
 
 
 def check_schedule():

@@ -51,7 +51,7 @@ explicit that scheduled runs may be dropped under load with no guarantee
 offered. Rather than depend on that, the clock lives on a machine that is
 always on: `imessage_watch.py` triggers a run whenever the last successful one
 is over 55 minutes old. The seat sweep still gates itself on
-`SEAT_SWEEP_INTERVAL` regardless of how often a run is triggered.
+`SWEEP_HOUR` regardless of how often a run is triggered.
 
 The trade is plain. If that machine is off, nothing runs at all. Restoring a
 `schedule:` block costs nothing and would act as a backstop if GitHub's

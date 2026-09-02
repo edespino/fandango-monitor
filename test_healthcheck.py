@@ -26,10 +26,25 @@ class Ago(unittest.TestCase):
         self.assertEqual(hc.ago(local), "5 min ago")
 
 
+class LocalBranch(unittest.TestCase):
+    """The local-scheduler path is off by default, so nothing exercises it.
+    It still has to work when someone turns it on."""
+
+    def test_check_state_runs_with_the_local_scheduler_on(self):
+        original = hc.LOCAL_SCHEDULER
+        hc.LOCAL_SCHEDULER = True
+        try:
+            hc.check_state()          # must not raise
+        finally:
+            hc.LOCAL_SCHEDULER = original
+
+    def test_check_agent_runs(self):
+        hc.check_agent()              # must not raise
+
+
 class Thresholds(unittest.TestCase):
     def test_grace_periods_exceed_their_intervals(self):
-        # A check that fires every 15 minutes must not be called overdue
-        # the moment it is a second late.
+        # A check must not be called overdue the moment it is a second late.
         self.assertGreater(hc.RUN_GRACE, timedelta(minutes=15))
         # The sweep runs once a day, so the grace must exceed a day.
         self.assertGreater(hc.SWEEP_GRACE, timedelta(hours=24))
