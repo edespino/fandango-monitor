@@ -172,28 +172,50 @@ python3 -m unittest discover -v                # tests
 python3 healthcheck.py
 ```
 
-Reports whether the scheduler is loaded and running on time, how long since
-the seat maps were read, whether any run has failed, where each theater's
-schedule currently ends, whether the published page is current, and whether
-the two-hourly rebuild has actually been firing. Exits non-zero when something
-needs attention, so it also works from another script.
+Reports whether the driver is loaded, when a run last succeeded, whether the
+published page is current, and where each theater's schedule ends. Exits
+non-zero when something needs attention, so it also works from another script.
 
 It reads local state and the published page only — no requests to Fandango,
 so it is cheap to run as often as you like.
 
-### Installing the scheduler
+### How it is wired
 
-```sh
-sed "s|REPO_PATH|$PWD|g" com.user.fandango-monitor.plist \
-  > ~/Library/LaunchAgents/com.user.fandango-monitor.plist
-launchctl load ~/Library/LaunchAgents/com.user.fandango-monitor.plist
+One machine drives everything. The workflow has no schedule of its own, and
+nothing runs unless the Mac triggers it.
+
+```
+launchd, every 30 min
+  └─ imessage_watch.py
+       ├─ last success over 55 min old?  → gh workflow run status.yml
+       ├─ published status changed?      → iMessage
+       └─ nothing succeeded in 4 hours?  → iMessage
+
+GitHub Actions (triggered only)
+  └─ status.yml → Fandango → docs/ → committed → Pages
 ```
 
-To stop it:
+Every Fandango request happens on the runner. The Mac only reads the published
+page and the GitHub API, so it adds nothing to the request budget.
+
+Install the driver:
 
 ```sh
-launchctl unload ~/Library/LaunchAgents/com.user.fandango-monitor.plist
+echo '+15551234567' > imessage.conf     # not tracked
+python3 imessage_watch.py --test        # grant Automation access when asked
+sed "s|REPO_PATH|$PWD|g" com.user.odyssey-imessage.plist \
+  > ~/Library/LaunchAgents/com.user.odyssey-imessage.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.odyssey-imessage.plist
 ```
+
+Stop it with `launchctl bootout gui/$(id -u)/com.user.odyssey-imessage`.
+
+**The obvious weakness:** if that machine is off, nothing runs at all, and the
+thing that would tell you is on the same machine. That was a deliberate trade.
+A `schedule:` block in `status.yml` would be a free backstop and could not
+double-run, since a recent success suppresses the Mac's trigger — but GitHub's
+scheduler fired nothing across eight slots here, so it was not worth pretending
+otherwise.
 
 ### Status page
 
@@ -202,18 +224,16 @@ things stand, with an Apple Maps link for each theater. It is served from
 GitHub Pages off `main` and `/docs`, so it can be handed to whoever you are
 seeing the film with. (On a fork, turn that on under Settings → Pages.)
 
-The page has one owner, so the two schedulers do not fight over it:
+The workflow owns that file. Running `fandango_monitor.py` by hand rewrites it
+too, so pass `--no-report` locally unless you mean to replace it.
 
-- **GitHub Actions** (`.github/workflows/status.yml`) rebuilds and commits it
-  every two hours. This runs whether or not your laptop is awake.
-- **The launchd job** runs with `--no-report` and only sends notifications.
-  Without that flag it would rewrite the file on every run and leave the
-  working tree permanently dirty.
+### Running everything on one machine instead
 
-If you would rather not use Actions, delete that workflow, drop `--no-report`
-from the plist, and point launchd at `publish.sh` instead — it regenerates the
-page and pushes only when something changed. It needs a remote you can push to
-without being prompted.
+To skip Actions entirely: delete `.github/workflows/status.yml`, install
+`com.user.fandango-monitor.plist` in place of the driver above, and point it at
+`publish.sh`, which regenerates the page and pushes when something changed. It
+needs a remote you can push to without being prompted, and it puts all the
+Fandango traffic on your own address.
 
 ## Watching something else
 
@@ -235,8 +255,8 @@ template.html         status page template
 test_monitor.py       tests
 fixtures/             real API responses, used by the tests
 healthcheck.py        is any of this actually running?
-imessage_watch.py     texts you when the published status changes
-publish.sh            regenerate the page and push it
+imessage_watch.py     the driver: runs the workflow, texts you
+publish.sh            all-on-one-machine alternative to the workflow
 docs/index.html       generated status page
 ```
 
