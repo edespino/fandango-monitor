@@ -1,34 +1,42 @@
 {
- "generated": "2026-09-02T08:26:42+00:00",
+ "generated": "2026-09-02T08:46:20+00:00",
  "hits": [],
  "movie": "The Odyssey",
- "swept": "2026-09-02T01:48:23+00:00",
+ "swept": "2026-09-02T08:46:20+00:00",
  "target": {
   "centre": 8,
   "party": 2,
-  "rows": [
-   "F",
-   "G"
-  ]
+  "rows": {
+   "AANEM": [
+    "J",
+    "K",
+    "L",
+    "M"
+   ],
+   "AAOPK": [
+    "F",
+    "G"
+   ]
+  }
  },
  "theaters": [
   {
    "address": "5000 Dublin Blvd., Dublin, CA 94568",
    "capacity": 243,
    "code": "AAOPK",
-   "free": 1407,
+   "free": 1350,
    "last_day": "2026-09-16",
    "map": "https://maps.apple.com/?ll=37.7062%2C-121.8866&q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568",
    "matched": 0,
    "name": "Regal Hacienda Crossings",
-   "per_show": 24,
+   "per_show": 23,
    "shows": 59
   },
   {
    "address": "135 4th Street Suite #3000, San Francisco, CA 94103",
    "capacity": 419,
    "code": "AANEM",
-   "free": 1120,
+   "free": 1117,
    "last_day": "2026-09-11",
    "map": "https://maps.apple.com/?ll=37.7845%2C-122.404&q=AMC+Metreon+16&address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103",
    "matched": 0,
