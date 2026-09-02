@@ -819,6 +819,21 @@ def render_report(state) -> str:
 def write_report(state, destination: Path):
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(render_report(state))
+
+    # A machine-readable twin of the page, so the health check can see the
+    # published state without parsing HTML.
+    summary = summarise(state)
+    summary["generated"] = datetime.now().astimezone().isoformat(timespec="seconds")
+    swept = state.get("last_seat_sweep") or 0
+    summary["swept"] = (
+        datetime.fromtimestamp(swept).astimezone().isoformat(timespec="seconds")
+        if swept else None
+    )
+    summary["movie"] = MOVIE_TITLE
+    summary["target"] = {"rows": list(TARGET_ROWS), "centre": CENTRE_SEATS,
+                         "party": PARTY_SIZE}
+    (destination.parent / "status.json").write_text(
+        json.dumps(summary, indent=1, sort_keys=True))
     log(f"status page written to {destination}")
 
 

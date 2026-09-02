@@ -25,14 +25,19 @@ sys.path.insert(0, str(HERE))
 
 import fandango_monitor as fm  # noqa: E402
 
+# This setup runs entirely from the scheduled workflow. Set to True if you
+# also install the launchd agent, and the local checks below switch back on.
+LOCAL_SCHEDULER = False
+
 LABEL = "com.user.fandango-monitor"
 REPO = fm.REPO_URL.replace("https://github.com/", "") if fm.REPO_URL else ""
 PAGE = "https://edespino.github.io/fandango-monitor/"
+STATUS_JSON = PAGE + "status.json"
 
 # How late something has to be before it is worth mentioning.
 RUN_GRACE = timedelta(minutes=35)     # runs every 15 min
-SWEEP_GRACE = timedelta(hours=3)      # sweeps every 2 hours
-PAGE_GRACE = timedelta(hours=5)       # rebuilt every 2 hours, cron drifts
+SWEEP_GRACE = timedelta(hours=10)     # a few scheduled runs a day
+PAGE_GRACE = timedelta(hours=10)      # a few runs a day, cron drifts
 
 OK, WARN, BAD, INFO = "  ok  ", " warn ", " FAIL ", "      "
 problems = []
@@ -148,7 +153,7 @@ def check_schedule():
         return
     scheduled = [r for r in runs if r.get("event") == "schedule"]
     if not scheduled:
-        line(WARN, "The 2-hourly workflow has never fired on its own",
+        line(WARN, "The scheduled workflow has never fired on its own",
              "only manual runs so far; if this persists the page will go stale")
         return
     newest = max(scheduled, key=lambda r: r["createdAt"])
@@ -156,6 +161,30 @@ def check_schedule():
     bad = newest.get("conclusion") not in (None, "success")
     line(BAD if bad else OK,
          f"Scheduled page rebuild {ago(when)} ({newest.get('conclusion')})")
+
+
+def check_published_state():
+    """Read the summary the workflow publishes beside the page."""
+    try:
+        with urllib.request.urlopen(STATUS_JSON, timeout=20) as response:
+            data = json.loads(response.read())
+    except (urllib.error.URLError, OSError, ValueError) as exc:
+        line(WARN, f"Could not read published status.json: {exc}")
+        return
+    for entry in data.get("theaters", []):
+        line(INFO, f"{entry['name']}: through {entry['last_day']}, "
+                   f"{entry['shows']} showtimes, "
+                   f"{entry['per_show']} of {entry['capacity']} free per show")
+    hits = data.get("hits") or []
+    if hits:
+        print()
+        for hit in hits:
+            line(OK, f"SEATS: {' + '.join(hit['seats'])} — "
+                     f"{hit['theater']}, {hit['day']} {hit['time']}")
+    else:
+        target = data.get("target", {})
+        rows = "/".join(target.get("rows", []))
+        line(INFO, f"No pair matching rows {rows} yet")
 
 
 def check_page():
@@ -178,13 +207,17 @@ def check_page():
 
 def main():
     print(f"{fm.MOVIE_TITLE} seat monitor — {datetime.now().strftime('%b %-d, %-I:%M %p')}\n")
-    print("Local")
-    check_agent()
-    check_recent_run()
-    check_state()
-    print("\nPublished")
+    if LOCAL_SCHEDULER:
+        print("Local")
+        check_agent()
+        check_recent_run()
+        check_state()
+        print("\nPublished")
+    else:
+        print("Published (this setup runs from the workflow only)")
     check_schedule()
     check_page()
+    check_published_state()
 
     print()
     if problems:

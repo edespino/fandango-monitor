@@ -2,8 +2,16 @@ name: Update status page
 
 on:
   schedule:
-    # Every two hours. GitHub queues scheduled jobs, so expect some drift.
-    - cron: "17 */2 * * *"
+    # Times are UTC; the comments are America/Los_Angeles.
+    #
+    # These are an ESTIMATE, not a documented publishing window. Chains
+    # generally load the coming week midweek for the following Friday, so
+    # Tuesday and Wednesday get extra passes. Correct these once a real
+    # schedule drop has been observed in the log.
+    - cron: "0 16 * * *"     # 9am  daily
+    - cron: "0 20 * * *"     # 1pm  daily
+    - cron: "0 1 * * *"      # 6pm  daily (previous day PT)
+    - cron: "0 18 * * 2,3"   # 11am Tue and Wed, the likeliest drop window
   workflow_dispatch:
 
 # Only one run at a time, so two jobs never race to commit the same page.

@@ -18,14 +18,18 @@ It reads Fandango's public JSON endpoints. It does not buy anything.
 
 ## What it checks
 
-| Check | How often | Requests |
-| --- | --- | --- |
-| Dates published beyond the last known showtime | every run (15 min) | ~4 |
-| Every seat map at every showtime | every 2 hours | ~120 |
+| Check | Requests |
+| --- | --- |
+| Dates published beyond the last known showtime | ~4 |
+| Every seat map at every showtime | ~120 |
 
-Roughly 1,800 requests a day at the start of a run, falling as dates pass and
-there are fewer showtimes left to read. Requests are spaced 1.5 seconds apart.
-Both intervals are constants at the top of `fandango_monitor.py`.
+Runs a few times a day from a scheduled workflow, weighted toward the midweek
+window when chains usually load the coming week. That is an estimate rather
+than a documented publishing time, and the cron comments say so.
+
+About 400 requests a day, spaced 1.5 seconds apart. Fandango's `robots.txt`
+disallows `/napi/*`, so keep the frequency modest and expect no cooperation if
+it is raised.
 
 The first run is larger: it scans about 45 days at each theater to find where
 the film's schedule currently ends.
