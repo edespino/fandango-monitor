@@ -172,6 +172,23 @@ the clipboard:
 That last one matters. Silence is the normal state here, so a monitor that has
 quietly died looks exactly like a monitor with nothing to report.
 
+### If Fandango blocks us
+
+`robots.txt` disallows `/napi/*`, and Akamai sits in front, so a block would
+arrive as opaque 403s rather than a warning. Three things then happen, in this
+order:
+
+1. **The run exits non-zero** after three consecutive failures, so the workflow
+   goes red and GitHub mails about it. One bad run is a blip and stays green.
+2. **The page stops being republished.** A fresh timestamp over stale figures
+   is worse than an old timestamp, because it makes a dead monitor look
+   healthy. The page keeps its honest last-good time.
+3. **The alert still goes out.** The notify and issue steps run on failure too,
+   which is exactly when they matter.
+
+The Mac notices independently: it looks for a *successful* run, so failures do
+not reset its clock, and it texts after four hours with nothing succeeding.
+
 ## Running it
 
 ```sh

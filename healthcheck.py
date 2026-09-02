@@ -110,7 +110,7 @@ def check_state():
     state = fm.load_state(fm.STATE_PATH)
 
     failures = state.get("failures", 0)
-    if failures >= fm.FAILURE_ALERT_THRESHOLD:
+    if failures >= fm.FAILURE_THRESHOLD:
         line(BAD, f"{failures} failed runs in a row — the monitor is broken")
     elif failures:
         line(WARN, f"{failures} failed run(s) in a row")

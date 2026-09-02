@@ -92,7 +92,11 @@ USER_AGENT = (
 REQUEST_DELAY = 1.5      # seconds between requests
 REQUEST_TIMEOUT = 30
 MAX_RETRIES = 3
-FAILURE_ALERT_THRESHOLD = 8   # consecutive failed runs before shouting
+# Consecutive failed runs before the run is treated as broken: it exits
+# non-zero so the workflow goes red and GitHub mails about it, raises an
+# alert, and stops republishing the page. Three rides out a transient blip
+# without letting a real block sit quiet for hours.
+FAILURE_THRESHOLD = 3
 
 HERE = Path(__file__).resolve().parent
 STATE_PATH = HERE / "state.json"
@@ -941,19 +945,24 @@ def main(argv=None):
 
     api = Fandango()
     alerts = []
+    failed = broken = False
     try:
         alerts = run_checks(api, state, force=args.once)
     except MonitorError as exc:
+        failed = True
         state["failures"] = state.get("failures", 0) + 1
         log(f"check failed ({state['failures']} in a row): {exc}")
-        if state["failures"] >= FAILURE_ALERT_THRESHOLD and not state.get("failure_alerted"):
-            state["failure_alerted"] = True
-            alerts.append({
-                "kind": "broken",
-                "title": "Seat monitor is not working",
-                "body": f"{state['failures']} failed runs in a row. Last error: {exc}",
-                "url": "",
-            })
+        if state["failures"] >= FAILURE_THRESHOLD:
+            broken = True
+            if not state.get("failure_alerted"):
+                state["failure_alerted"] = True
+                alerts.append({
+                    "kind": "broken",
+                    "title": "Seat monitor is not working",
+                    "body": f"{state['failures']} failed runs in a row. "
+                            f"Last error: {exc}",
+                    "url": "",
+                })
     else:
         if state.get("failures"):
             log(f"recovered after {state['failures']} failed run(s)")
@@ -968,7 +977,13 @@ def main(argv=None):
         Path(args.alerts_out).write_text(json.dumps(alerts, indent=1))
         log(f"{len(alerts)} alert(s) written to {args.alerts_out}")
 
-    if not args.no_report:
+    # Never restamp the page from a run that could not read anything. A
+    # fresh timestamp over stale figures is worse than an old timestamp,
+    # because it makes a dead monitor look healthy.
+    if failed:
+        log("not republishing the page: nothing was read, so the figures "
+            "would be stale under a fresh timestamp")
+    elif not args.no_report:
         try:
             write_report(state, Path(args.report))
         except MonitorError as exc:
@@ -976,6 +991,9 @@ def main(argv=None):
 
     save_state(STATE_PATH, state)
     log(f"done, {api.requests} request(s), {len(alerts)} alert(s)")
+    if broken:
+        log(f"exiting non-zero after {state['failures']} consecutive failures")
+        return 1
     return 0
 
 

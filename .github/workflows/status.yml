@@ -68,7 +68,10 @@ jobs:
       # Sends only when something was actually found. Whichever provider has
       # its secrets set is used; with none set this step does nothing, so a
       # fork works without any configuration.
+      # always(): a run that failed because Fandango blocked us is exactly
+      # when the alert matters most, and the check step above exits non-zero.
       - name: Send alert
+        if: always()
         env:
           TWILIO_SID: ${{ secrets.TWILIO_SID }}
           TWILIO_TOKEN: ${{ secrets.TWILIO_TOKEN }}
@@ -170,7 +173,7 @@ jobs:
       # repo owner and pushes to the GitHub mobile app. Guarded against
       # reopening the same alert on a later run.
       - name: Open an issue
-        if: hashFiles('alert-text.txt') != ''
+        if: always() && hashFiles('alert-text.txt') != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

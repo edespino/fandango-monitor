@@ -8,6 +8,8 @@ the shapes the monitor actually meets rather than invented ones.
 import json
 import re
 import unittest
+import urllib.error as urllib_error
+from unittest import mock
 from pathlib import Path
 
 import fandango_monitor as fm
@@ -360,6 +362,47 @@ class PerTheaterRows(unittest.TestCase):
         groups = fm.find_groups(seatmap, fm.target_rows("AANEM"))
         self.assertEqual(len(groups), 1)
         self.assertEqual(groups[0]["row"], "K")
+
+
+class BlockedBehaviour(unittest.TestCase):
+    """If Fandango starts refusing us, that must not look like success."""
+
+    def test_a_403_is_a_failure_not_an_empty_result(self):
+        # 404 means an expired showtime and returns None. Anything else has
+        # to raise, or a block would read as "nothing playing".
+        api = fm.Fandango(delay=0)
+        api._last = 0
+
+        class Boom(urllib_error.HTTPError):
+            def __init__(self):
+                super().__init__("http://x", 403, "Forbidden", {}, None)
+
+        calls = {"n": 0}
+
+        def fake_urlopen(*a, **k):
+            calls["n"] += 1
+            raise Boom()
+
+        with mock.patch("urllib.request.urlopen", fake_urlopen), \
+             mock.patch("time.sleep", lambda *_: None):
+            with self.assertRaises(fm.MonitorError):
+                api.get("/napi/anything")
+        self.assertEqual(calls["n"], fm.MAX_RETRIES, "should retry before giving up")
+
+    def test_404_is_tolerated(self):
+        api = fm.Fandango(delay=0)
+        api._last = 0
+
+        def fake_urlopen(*a, **k):
+            raise urllib_error.HTTPError("http://x", 404, "Gone", {}, None)
+
+        with mock.patch("urllib.request.urlopen", fake_urlopen):
+            self.assertIsNone(api.get("/napi/expired"))
+
+    def test_threshold_rides_out_a_blip_but_not_a_block(self):
+        # One bad run must not go red; a sustained block must.
+        self.assertGreater(fm.FAILURE_THRESHOLD, 1)
+        self.assertLessEqual(fm.FAILURE_THRESHOLD, 4)
 
 
 class StubApi:
