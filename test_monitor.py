@@ -298,6 +298,29 @@ class RowMap(unittest.TestCase):
         self.assertEqual(row["capacity"], 243)
 
 
+class RepoLink(unittest.TestCase):
+    def test_repo_link_is_on_the_page(self):
+        html = fm.render_report(json.loads(json.dumps(fm.EMPTY_STATE)))
+        self.assertIn('href="%s"' % fm.REPO_URL, html)
+        self.assertIn("github.com/edespino/fandango-monitor", html)
+
+    def test_license_is_named_and_linked(self):
+        html = fm.render_report(json.loads(json.dumps(fm.EMPTY_STATE)))
+        self.assertIn("Apache 2.0", html)
+        self.assertIn('href="%s"' % fm.LICENSE_URL, html)
+        self.assertIn("/blob/main/LICENSE", html)
+
+    def test_blank_repo_url_omits_the_link(self):
+        original = fm.REPO_URL
+        fm.REPO_URL = ""
+        try:
+            html = fm.render_report(json.loads(json.dumps(fm.EMPTY_STATE)))
+            self.assertNotIn("Source and setup", html)
+            self.assertNotIn("{{", html)
+        finally:
+            fm.REPO_URL = original
+
+
 class AppleScriptQuoting(unittest.TestCase):
     def test_quotes_and_backslashes_are_escaped(self):
         self.assertEqual(fm.applescript_string('a "b" \\c'), '"a \\"b\\" \\\\c"')

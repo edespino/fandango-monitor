@@ -110,6 +110,9 @@
   .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;
     top:.05em;font-family:var(--mono);font-size:.7rem;color:var(--amber);
     border:1px solid var(--edge);width:1.45rem;height:1.45rem;display:grid;place-items:center}
+  footer a{color:var(--amber);text-decoration:none;
+           border-bottom:1px solid var(--edge);padding-bottom:1px}
+  footer a:hover,footer a:focus-visible{border-color:var(--amber)}
   footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--edge);
          padding-top:1rem;display:flex;flex-direction:column;gap:.25rem}
   .mono{font-family:var(--mono)}
@@ -207,6 +210,7 @@
   <footer>
     <span>Page generated <time class="ts mono" datetime="{{UPDATED_ISO}}">{{UPDATED}}</time></span>
     <span>Seat maps last read <time class="ts mono" datetime="{{SWEPT_ISO}}">{{SWEPT}}</time></span>
+    {{REPO}}
   </footer>
 </div>
 <script>

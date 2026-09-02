@@ -40,6 +40,11 @@ THEATERS = {
 # standard laser prints. Set to "" to accept every format.
 FORMAT_MATCH = "IMAX"
 
+# Shown in the footer of the status page. Blank to leave it out.
+REPO_URL = "https://github.com/edespino/fandango-monitor"
+LICENSE_NAME = "Apache 2.0"
+LICENSE_URL = REPO_URL + "/blob/main/LICENSE" if REPO_URL else ""
+
 # Rows are lettered from the screen backward, so row A is the front row.
 TARGET_ROWS = ("F", "G")
 CENTRE_SEATS = 8      # how many seats around the row's midpoint count as centre
@@ -773,6 +778,19 @@ def render_report(state) -> str:
     else:
         poster_html = ""
 
+    parts = []
+    if REPO_URL:
+        parts.append('Source and setup at <a href="{url}">{label}</a>'.format(
+            url=escape(REPO_URL),
+            label=escape(REPO_URL.replace("https://", "")),
+        ))
+    if LICENSE_URL and LICENSE_NAME:
+        parts.append('licensed <a href="{url}">{name}</a>'.format(
+            url=escape(LICENSE_URL), name=escape(LICENSE_NAME)))
+    elif LICENSE_NAME:
+        parts.append("licensed " + escape(LICENSE_NAME))
+    repo_html = "<span>{}</span>".format(", ".join(parts)) if parts else ""
+
     html = TEMPLATE_PATH.read_text()
     replacements = {
         "{{TITLE}}": escape(f"{MOVIE_TITLE} Seat Watch"),
@@ -791,6 +809,7 @@ def render_report(state) -> str:
         "{{UPDATED_ISO}}": escape(now.isoformat(timespec="seconds")),
         "{{SWEPT}}": escape(swept_text),
         "{{SWEPT_ISO}}": escape(swept_iso),
+        "{{REPO}}": repo_html,
     }
     for token, value in replacements.items():
         html = html.replace(token, value)
