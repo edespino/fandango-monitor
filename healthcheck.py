@@ -172,9 +172,11 @@ def check_published_state():
         line(WARN, f"Could not read published status.json: {exc}")
         return
     for entry in data.get("theaters", []):
+        free = f"{entry['per_show']}"
+        if entry.get("capacity"):
+            free += f" of {entry['capacity']}"
         line(INFO, f"{entry['name']}: through {entry['last_day']}, "
-                   f"{entry['shows']} showtimes, "
-                   f"{entry['per_show']} of {entry['capacity']} free per show")
+                   f"{entry['shows']} showtimes, {free} free per show")
     hits = data.get("hits") or []
     if hits:
         print()

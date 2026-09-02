@@ -17,6 +17,10 @@ on:
         description: "Send a test message to confirm alerting works"
         type: boolean
         default: false
+      force_sweep:
+        description: "Read every seat map now, ignoring the usual interval"
+        type: boolean
+        default: false
 
 # Only one run at a time, so two jobs never race to commit the same page.
 concurrency:
@@ -47,7 +51,12 @@ jobs:
           restore-keys: monitor-state-
 
       - name: Check showtimes and seats
-        run: python3 fandango_monitor.py --dry-run --alerts-out alerts.json
+        run: |
+          if [ "${{ inputs.force_sweep }}" = "true" ]; then
+            python3 fandango_monitor.py --dry-run --once --alerts-out alerts.json
+          else
+            python3 fandango_monitor.py --dry-run --alerts-out alerts.json
+          fi
 
       # Lets you confirm the alert path works without waiting for a real
       # find, which would otherwise only be proven at the moment it matters.
