@@ -40,6 +40,23 @@
     background-image:radial-gradient(closest-side,#E9E3D7 76%,transparent 78%);
     background-size:26px 13px;background-repeat:repeat-x;opacity:.45}
   header::before{top:7px} header::after{bottom:7px}
+
+  /* Seats open: the film starts running. The perforations travel and warm
+     to lamp colour, which is the projector lighting up rather than a badge
+     bolted on. Nothing moves in the waiting state. */
+  @keyframes advance{to{background-position-x:26px}}
+  @keyframes lamp{
+    0%,100%{opacity:.5}
+    50%{opacity:1}
+  }
+  header.hit::before,header.hit::after{
+    background-image:radial-gradient(closest-side,#F0B860 76%,transparent 78%);
+    animation:advance .9s linear infinite, lamp 2.4s ease-in-out infinite;
+  }
+  header.hit::after{animation-direction:reverse,normal}
+  @media (prefers-reduced-motion:reduce){
+    header.hit::before,header.hit::after{animation:none;opacity:.95}
+  }
   .eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;
            text-transform:uppercase;color:#C9A377;margin:0 0 .7rem}
   h1{font-family:var(--disp);font-weight:600;font-size:clamp(2.3rem,8vw,3.4rem);
@@ -140,7 +157,7 @@
 </head>
 <body>
 <div class="wrap">
-  <header>
+  <header class="{{HEADLINE_CLASS}}">
     <div class="masthead">
       {{POSTER}}
       <div class="masthead-text">

@@ -459,6 +459,36 @@ class HitVisual(unittest.TestCase):
         self.assertNotIn("None", html)
 
 
+class HeaderState(unittest.TestCase):
+    """The header carries the state so it can react. Nothing should move
+    while we are only waiting."""
+
+    def _render(self, with_hit):
+        state = json.loads(json.dumps(fm.EMPTY_STATE))
+        code = next(iter(fm.THEATERS))
+        if with_hit:
+            state["availability"][code] = {"2099-01-01": {"6:00 PM": {
+                "sold_out": False, "free": 9, "match": ["K17", "K18"]}}}
+        return fm.render_report(state)
+
+    def test_waiting_header_is_marked_waiting(self):
+        self.assertIn('<header class="waiting"', self._render(False))
+
+    def test_hit_header_is_marked_hit(self):
+        self.assertIn('<header class="hit"', self._render(True))
+
+    def test_animation_is_scoped_to_the_hit_state(self):
+        # A rule that animated unconditionally would make the page restless
+        # every day it has nothing to report.
+        page = self._render(False)
+        self.assertIn("header.hit::before", page)
+        self.assertNotIn("header::before,header::after{content:\"\";position:absolute;"
+                         "left:0;right:0;height:13px;animation", page)
+
+    def test_reduced_motion_is_respected(self):
+        self.assertIn("prefers-reduced-motion:reduce", self._render(True))
+
+
 class DailySweep(unittest.TestCase):
     """Once per local day at SWEEP_HOUR, whatever timezone the runner is in."""
 
