@@ -33,9 +33,19 @@ cancellations in rows that are already fully sold, which is rare enough not to
 justify the cost of running it at the same rate.
 
 That works out to roughly 500 requests a day, spaced 1.5 seconds apart, with
-new dates found within about an hour. The workflow runs hourly through waking
-hours and stops overnight; the seat sweep gates itself on
-`SEAT_SWEEP_INTERVAL` regardless of how often the workflow fires.
+new dates found within about an hour.
+
+**The workflow has no schedule.** GitHub's cron produced nothing across eight
+slots in eight hours here, at two different minutes, and the documentation is
+explicit that scheduled runs may be dropped under load with no guarantee
+offered. Rather than depend on that, the clock lives on a machine that is
+always on: `imessage_watch.py` triggers a run whenever the last successful one
+is over 55 minutes old. The seat sweep still gates itself on
+`SEAT_SWEEP_INTERVAL` regardless of how often a run is triggered.
+
+The trade is plain. If that machine is off, nothing runs at all. Restoring a
+`schedule:` block costs nothing and would act as a backstop if GitHub's
+scheduler ever becomes reliable for this repo.
 
 Fandango's `robots.txt` disallows `/napi/*`, so keep the frequency modest and
 expect no cooperation if it is raised.

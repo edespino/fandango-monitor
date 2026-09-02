@@ -1,29 +1,11 @@
 name: Update status page
 
 on:
-  schedule:
-    # Hourly through waking hours, quiet overnight. Times are UTC; PT in
-    # the comments. Most invocations are the cheap date check (~8 requests);
-    # the expensive seat sweep gates itself on SEAT_SWEEP_INTERVAL and runs
-    # roughly three times a day.
-    #
-    # Minute 37, not 0. GitHub's scheduler is best effort with no guarantee,
-    # and the top of the hour is the most contended minute by a wide margin,
-    # so runs there are delayed or dropped. Five consecutive slots at :00
-    # produced nothing before this was changed.
-    #
-    # Theaters are not known to publish overnight, so the small hours are
-    # skipped. That is an estimate, not a documented window.
-    - cron: "37 13-23 * * *"  # 6am - 4pm PT
-    - cron: "37 0-6 * * *"    # 5pm - 11pm PT
-    # TEMPORARY probe, remove once answered. The ranges above skip UTC
-    # hours 7-12, so after a miss at 06:37 the next real slot was six hours
-    # out. This fills that gap to find out whether GitHub's scheduler ever
-    # fires for this repo, rather than waiting blind. Each run is the cheap
-    # date check, about 8 requests.
-    - cron: "7 8-12 * * *"
-    # 12:50am PDT, asked for explicitly to watch one fire.
-    - cron: "50 7 * * *"
+  # Triggered only, never scheduled. GitHub's cron produced nothing across
+  # eight slots on this repo over eight hours, and the docs are explicit
+  # that scheduled runs may be dropped under load with no guarantee. The
+  # clock lives on a machine that is always on: imessage_watch.py triggers
+  # a run when the last success is over 55 minutes old.
   workflow_dispatch:
     inputs:
       test_alert:
