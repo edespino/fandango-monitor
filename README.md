@@ -97,10 +97,14 @@ every 30 minutes, and never contacts Fandango:
 
 1. Texts you when the published status changes — a seat pair appeared, or the
    dates extended.
-2. Triggers the workflow when its last successful run is over 55 minutes old.
-   GitHub's cron is best effort and dropped every slot on this repo, so a
-   machine that is always on makes a better clock. Actions still does all the
-   Fandango work; this only presses the button.
+2. **Runs the workflow.** It has no schedule of its own, so this is the clock:
+   a run is triggered whenever the last successful one is over 55 minutes old.
+   Actions still does every Fandango request; this only presses the button.
+
+   Written as "how stale before running again" rather than a wall clock, so a
+   missed tick, a failed run or a sleeping machine is caught at the next
+   opportunity. A GitHub `schedule:` could be added back tomorrow without
+   double running, since a recent success suppresses this.
 3. Texts you when the pipeline has been dead for four hours. Silence otherwise
    looks exactly like "no seats yet", which is the failure that matters.
 

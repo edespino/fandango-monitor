@@ -5,10 +5,9 @@ Three jobs, all from a machine that is always on:
 
   1. Text when the published status changes - a seat pair appeared, or the
      dates extended.
-  2. Keep the scheduled workflow running. GitHub's cron is best effort and
-     has dropped every slot on this repo, so if the last successful run is
-     old this triggers one. Actions still does all the Fandango work; this
-     only presses the button.
+  2. Run the workflow. It has no schedule of its own - GitHub's cron fired
+     nothing across eight slots here - so this is the clock. Actions still
+     does every Fandango request; this only presses the button.
   3. Say so when the pipeline is dead. Silence otherwise looks exactly like
      "no seats yet", which is the failure that matters.
 
@@ -43,13 +42,22 @@ PAGE_URL = "https://edespino.github.io/fandango-monitor/"
 HANDLE_FILE = HERE / "imessage.conf"
 SEEN_FILE = HERE / ".imessage-seen.json"
 
-# Trigger a run when the last success is older than this. This job runs every
-# 30 minutes, so 55 means the tick an hour after the last run steps in, giving
-# an hourly cadence. Anything over 60 would slip to every 90 minutes. It must
-# stay above the 30 minute interval, or every tick would trigger a run.
-NUDGE_AFTER = timedelta(minutes=55)
+# This is the scheduler. The workflow has no cron of its own, because
+# GitHub's fired nothing across eight slots here, so nothing runs unless
+# this triggers it.
+#
+# Expressed as "how stale before running again" rather than a wall clock,
+# which makes it self correcting: a missed tick, a failed run or a sleeping
+# machine is caught at the next opportunity instead of waiting a full cycle.
+# It also means a GitHub schedule could be added back tomorrow without
+# double running, since a recent success suppresses this.
+#
+# Checked every 30 minutes by launchd, so 55 gives an hourly cadence: the
+# tick at 60 minutes triggers, the one at 30 does not. Must stay above 30,
+# or every tick would fire.
+RUN_EVERY = timedelta(minutes=55)
 
-# Shout when it has been dead this long despite being nudged.
+# Shout when nothing has succeeded this long despite being triggered.
 BROKEN_AFTER = timedelta(hours=4)
 
 
@@ -206,7 +214,7 @@ def main():
     else:
         age = now - success
         print(f"last successful run {int(age.total_seconds() // 60)} min ago")
-        if age > NUDGE_AFTER and not anything_running():
+        if age > RUN_EVERY and not anything_running():
             if args.dry_run:
                 print("would trigger a run")
             elif gh("workflow", "run", WORKFLOW, "--repo", REPO) is not None:

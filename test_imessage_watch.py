@@ -99,18 +99,18 @@ class SeenFile(unittest.TestCase):
 
 
 class Thresholds(unittest.TestCase):
-    def test_nudge_fires_before_the_broken_warning(self):
+    def test_a_run_is_attempted_before_declaring_it_broken(self):
         # Otherwise it would announce a failure it had not yet tried to fix.
-        self.assertLess(w.NUDGE_AFTER, w.BROKEN_AFTER)
+        self.assertLess(w.RUN_EVERY, w.BROKEN_AFTER)
 
-    def test_nudge_is_longer_than_the_check_interval(self):
+    def test_cadence_is_longer_than_the_check_interval(self):
         # This runs every 30 minutes. A shorter threshold would trigger a
         # run on every single tick.
-        self.assertGreater(w.NUDGE_AFTER, timedelta(minutes=30))
+        self.assertGreater(w.RUN_EVERY, timedelta(minutes=30))
 
-    def test_nudge_still_yields_an_hourly_cadence(self):
+    def test_cadence_yields_hourly_runs(self):
         # Above 60 and the 60 minute tick is skipped, slipping to 90.
-        self.assertLess(w.NUDGE_AFTER, timedelta(minutes=60))
+        self.assertLess(w.RUN_EVERY, timedelta(minutes=60))
 
 
 class Escaping(unittest.TestCase):
