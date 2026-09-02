@@ -1,7 +1,13 @@
 # fandango-monitor
 
+[![Tests](https://github.com/edespino/fandango-monitor/actions/workflows/tests.yml/badge.svg)](https://github.com/edespino/fandango-monitor/actions/workflows/tests.yml)
+
 Watches Fandango for a film's showtimes and tells you when two seats open up
 in the part of the auditorium you actually want to sit in.
+
+**Live status: https://edespino.github.io/fandango-monitor/** — rebuilt every
+two hours, showing seats free in each row at both theaters and whether anything
+currently matches.
 
 Built for a specific problem: *The Odyssey* is showing on 70mm IMAX film at two
 Bay Area theaters, every seat from the fourth row back is sold, and the only
@@ -73,10 +79,10 @@ launchctl unload ~/Library/LaunchAgents/com.user.fandango-monitor.plist
 
 ### Status page
 
-`docs/index.html` is a small page showing where things stand, with an Apple
-Maps link for each theater. Serve it from GitHub Pages (Settings → Pages → main
-branch, `/docs`) to get a link that stays current and can be shared with
-whoever you are seeing the film with.
+[`docs/index.html`](https://edespino.github.io/fandango-monitor/) shows where
+things stand, with an Apple Maps link for each theater. It is served from
+GitHub Pages off `main` and `/docs`, so it can be handed to whoever you are
+seeing the film with. (On a fork, turn that on under Settings → Pages.)
 
 The page has one owner, so the two schedulers do not fight over it:
 
