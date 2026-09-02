@@ -82,10 +82,17 @@ Carriers are shutting these down. Checked 2026-09-01:
 Confirm yours resolves before relying on it — `dig +short MX <domain>` is
 enough. A failed send warns and leaves the issue fallback to carry it.
 
-**A real iMessage, from your Mac.** `imessage_watch.py` reads the published
-`status.json` and texts you when a seat pair appears or the dates extend. It
-never contacts Fandango, so it adds nothing to the request budget above — one
-request to GitHub Pages per run.
+**A real iMessage, from your Mac.** `imessage_watch.py` does three things
+every 30 minutes, and never contacts Fandango:
+
+1. Texts you when the published status changes — a seat pair appeared, or the
+   dates extended.
+2. Triggers the workflow when its last successful run is over 55 minutes old.
+   GitHub's cron is best effort and dropped every slot on this repo, so a
+   machine that is always on makes a better clock. Actions still does all the
+   Fandango work; this only presses the button.
+3. Texts you when the pipeline has been dead for four hours. Silence otherwise
+   looks exactly like "no seats yet", which is the failure that matters.
 
 ```sh
 echo '+15551234567' > imessage.conf     # not tracked

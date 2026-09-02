@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Tests for the change detection behind the iMessage watcher."""
 
+import json
+import pathlib
+import tempfile
 import unittest
+from datetime import timedelta
 
 import imessage_watch as w
 
@@ -55,6 +59,58 @@ class Interesting(unittest.TestCase):
                 "theaters": [{"code": "X", "last_day": "2026-09-16"}]}
         later = dict(base, generated="c", swept="d")
         self.assertEqual(w.interesting(base), w.interesting(later))
+
+
+class SeenFile(unittest.TestCase):
+    """load_seen has to cope with whatever is already on disk."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.path = pathlib.Path(self.tmp.name) / "seen.json"
+        self.original, w.SEEN_FILE = w.SEEN_FILE, self.path
+        self.addCleanup(setattr, w, "SEEN_FILE", self.original)
+
+    def test_missing_file_is_a_blank_slate(self):
+        self.assertEqual(w.load_seen(),
+                         {"interesting": {}, "broken_alerted": False})
+
+    def test_reads_the_older_flat_format(self):
+        # An install predating the watchdog stored the payload at the top
+        # level. Misreading it as blank would re-announce everything.
+        self.path.write_text(json.dumps(
+            {"hits": ["x"], "last_day": {"AAOPK": "2026-09-16"}}))
+        loaded = w.load_seen()
+        self.assertEqual(loaded["interesting"]["hits"], ["x"])
+        self.assertFalse(loaded["broken_alerted"])
+
+    def test_reads_the_current_format(self):
+        self.path.write_text(json.dumps(
+            {"interesting": {"hits": ["y"], "last_day": {}},
+             "broken_alerted": True}))
+        loaded = w.load_seen()
+        self.assertEqual(loaded["interesting"]["hits"], ["y"])
+        self.assertTrue(loaded["broken_alerted"])
+
+    def test_corrupt_file_does_not_crash_the_run(self):
+        self.path.write_text("{not json")
+        self.assertEqual(w.load_seen(),
+                         {"interesting": {}, "broken_alerted": False})
+
+
+class Thresholds(unittest.TestCase):
+    def test_nudge_fires_before_the_broken_warning(self):
+        # Otherwise it would announce a failure it had not yet tried to fix.
+        self.assertLess(w.NUDGE_AFTER, w.BROKEN_AFTER)
+
+    def test_nudge_is_longer_than_the_check_interval(self):
+        # This runs every 30 minutes. A shorter threshold would trigger a
+        # run on every single tick.
+        self.assertGreater(w.NUDGE_AFTER, timedelta(minutes=30))
+
+    def test_nudge_still_yields_an_hourly_cadence(self):
+        # Above 60 and the 60 minute tick is skipped, slipping to 90.
+        self.assertLess(w.NUDGE_AFTER, timedelta(minutes=60))
 
 
 class Escaping(unittest.TestCase):
