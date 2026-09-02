@@ -186,8 +186,16 @@ order:
 3. **The alert still goes out.** The notify and issue steps run on failure too,
    which is exactly when they matter.
 
-The Mac notices independently: it looks for a *successful* run, so failures do
-not reset its clock, and it texts after four hours with nothing succeeding.
+The Mac notices independently, and texts rather than waiting:
+
+- **A red run is texted straight away.** The monitor only exits non-zero after
+  three consecutive failures, so red already means a sustained problem rather
+  than one bad request. No need to wait out a timer.
+- **Four hours with nothing succeeding** is texted too. That covers the other
+  shape of failure, where runs stop happening at all rather than failing.
+
+Both are sent once and reset on the next successful run, so a problem that
+persists for a day does not text every thirty minutes.
 
 ## Running it
 

@@ -8,8 +8,10 @@ Three jobs, all from a machine that is always on:
   2. Run the workflow. It has no schedule of its own - GitHub's cron fired
      nothing across eight slots here - so this is the clock. Actions still
      does every Fandango request; this only presses the button.
-  3. Say so when the pipeline is dead. Silence otherwise looks exactly like
-     "no seats yet", which is the failure that matters.
+  3. Say so when it breaks. A red run means the monitor already failed three
+     times running, so that is texted straight away; a stretch with nothing
+     succeeding at all is texted after four hours. Silence otherwise looks
+     exactly like "no seats yet", which is the failure that matters.
 
 Never contacts Fandango. Reads the published page and the GitHub API only.
 
@@ -127,20 +129,29 @@ def fetch_status():
         return None
 
 
-def last_success() -> datetime | None:
-    """When the workflow last completed successfully."""
+def workflow_state():
+    """When it last succeeded, and how the most recent finished run went.
+
+    A red run is worth texting about on its own: the monitor only exits
+    non-zero after three consecutive failures, so red already means a
+    sustained problem rather than one bad request.
+    """
     raw = gh("run", "list", "--repo", REPO, "--workflow", WORKFLOW,
-             "--limit", "20", "--json", "conclusion,createdAt,status")
+             "--limit", "20", "--json", "conclusion,createdAt,status,url")
     if not raw:
-        return None
+        return None, None, None
     try:
         runs = json.loads(raw)
     except ValueError:
-        return None
+        return None, None, None
+
     done = [r["createdAt"] for r in runs if r.get("conclusion") == "success"]
-    if not done:
-        return None
-    return datetime.fromisoformat(max(done).replace("Z", "+00:00"))
+    success = (datetime.fromisoformat(max(done).replace("Z", "+00:00"))
+               if done else None)
+
+    finished = [r for r in runs if r.get("status") == "completed"]
+    latest = max(finished, key=lambda r: r["createdAt"]) if finished else None
+    return success, (latest or {}).get("conclusion"), (latest or {}).get("url")
 
 
 def anything_running() -> bool:
@@ -187,10 +198,12 @@ def load_seen() -> dict:
             if "interesting" in stored:
                 return stored
             # Earlier format kept the payload at the top level.
-            return {"interesting": stored, "broken_alerted": False}
+            return {"interesting": stored, "broken_alerted": False,
+                    "run_failed_alerted": False}
         except ValueError:
             pass
-    return {"interesting": {}, "broken_alerted": False}
+    return {"interesting": {}, "broken_alerted": False,
+            "run_failed_alerted": False}
 
 
 def main():
@@ -211,8 +224,19 @@ def main():
     messages = []
 
     # --- keep the workflow alive -------------------------------------------
-    success = last_success()
+    success, latest, run_url = workflow_state()
     now = datetime.now(timezone.utc)
+
+    # A failed run means the monitor already hit its failure threshold.
+    if latest is not None and latest != "success":
+        if not seen.get("run_failed_alerted"):
+            seen["run_failed_alerted"] = True
+            messages.append(
+                f"Seat monitor is failing. The last run finished '{latest}' — "
+                f"Fandango may be blocking us.\n{run_url or REPO}")
+    elif latest == "success":
+        seen["run_failed_alerted"] = False
+
     if success is None:
         print("no successful workflow run found")
     else:

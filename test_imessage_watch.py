@@ -85,8 +85,9 @@ class SeenFile(unittest.TestCase):
         self.addCleanup(setattr, w, "SEEN_FILE", self.original)
 
     def test_missing_file_is_a_blank_slate(self):
-        self.assertEqual(w.load_seen(),
-                         {"interesting": {}, "broken_alerted": False})
+        loaded = w.load_seen()
+        self.assertEqual(loaded["interesting"], {})
+        self.assertFalse(any(v for k, v in loaded.items() if k.endswith("_alerted")))
 
     def test_reads_the_older_flat_format(self):
         # An install predating the watchdog stored the payload at the top
@@ -107,8 +108,9 @@ class SeenFile(unittest.TestCase):
 
     def test_corrupt_file_does_not_crash_the_run(self):
         self.path.write_text("{not json")
-        self.assertEqual(w.load_seen(),
-                         {"interesting": {}, "broken_alerted": False})
+        loaded = w.load_seen()
+        self.assertEqual(loaded["interesting"], {})
+        self.assertFalse(any(v for k, v in loaded.items() if k.endswith("_alerted")))
 
 
 class Thresholds(unittest.TestCase):
@@ -124,6 +126,31 @@ class Thresholds(unittest.TestCase):
     def test_cadence_yields_hourly_runs(self):
         # Above 60 and the 60 minute tick is skipped, slipping to 90.
         self.assertLess(w.RUN_EVERY, timedelta(minutes=60))
+
+
+class RunFailureAlert(unittest.TestCase):
+    """A red run means the monitor already failed three times over, so it is
+    worth a text there and then rather than after the four hour clock."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.path = pathlib.Path(self.tmp.name) / "seen.json"
+        self.original, w.SEEN_FILE = w.SEEN_FILE, self.path
+        self.addCleanup(setattr, w, "SEEN_FILE", self.original)
+
+    def test_blank_state_has_the_flag(self):
+        self.assertIn("run_failed_alerted", w.load_seen())
+
+    def test_older_state_gains_the_flag(self):
+        self.path.write_text(json.dumps({"hits": [], "last_day": {}}))
+        self.assertIn("run_failed_alerted", w.load_seen())
+
+    def test_flag_survives_a_round_trip(self):
+        self.path.write_text(json.dumps(
+            {"interesting": {}, "broken_alerted": False,
+             "run_failed_alerted": True}))
+        self.assertTrue(w.load_seen()["run_failed_alerted"])
 
 
 class Escaping(unittest.TestCase):
