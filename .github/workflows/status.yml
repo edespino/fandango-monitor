@@ -76,6 +76,9 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMS_EMAIL: ${{ secrets.SMS_EMAIL }}
+          PUSHCUT_URL: ${{ secrets.PUSHCUT_URL }}
+          PUSHCUT_KEY: ${{ secrets.PUSHCUT_KEY }}
+          PUSHCUT_NOTIFICATION: ${{ secrets.PUSHCUT_NOTIFICATION }}
         run: |
           set -euo pipefail
           count=$(jq 'length' alerts.json)
@@ -122,6 +125,29 @@ jobs:
               echo "sent via email-to-SMS"; sent=1
             else
               echo "::warning::email-to-SMS failed; the carrier gateway may be gone"
+            fi
+          fi
+          # Pushcut. Either the per-notification webhook URL from the app,
+          # or an API key plus the notification's name. The JSON body only
+          # changes the text on Pushcut Pro; on the free tier the
+          # notification still fires, just with its configured wording.
+          if [ -n "${PUSHCUT_URL:-}" ] || [ -n "${PUSHCUT_KEY:-}" ]; then
+            payload=$(jq -n --arg t "Odyssey seats" --arg x "$text" \
+                        '{title: $t, text: $x}')
+            if [ -n "${PUSHCUT_URL:-}" ]; then
+              ok=$(curl -fsS -X POST -H 'Content-Type: application/json' \
+                     -d "$payload" "$PUSHCUT_URL" > /dev/null && echo yes || echo no)
+            else
+              name="${PUSHCUT_NOTIFICATION:-Odyssey seats}"
+              ok=$(curl -fsS -X POST -H 'Content-Type: application/json' \
+                     -H "API-Key: $PUSHCUT_KEY" -d "$payload" \
+                     "https://api.pushcut.io/v1/notifications/$(jq -rn --arg n "$name" '$n|@uri')" \
+                     > /dev/null && echo yes || echo no)
+            fi
+            if [ "$ok" = "yes" ]; then
+              echo "sent via Pushcut"; sent=1
+            else
+              echo "::warning::Pushcut send failed"
             fi
           fi
           if [ -n "${SLACK_WEBHOOK:-}" ]; then

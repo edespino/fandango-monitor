@@ -82,6 +82,15 @@ Carriers are shutting these down. Checked 2026-09-01:
 Confirm yours resolves before relying on it — `dig +short MX <domain>` is
 enough. A failed send warns and leaves the issue fallback to carry it.
 
+**Pushcut**, for a native iPhone notification. Create a notification in the
+app, then set either `PUSHCUT_URL` to its webhook URL, or `PUSHCUT_KEY` to
+your API key with `PUSHCUT_NOTIFICATION` as its name.
+
+The seat details ride in the JSON body, which Pushcut only applies on a Pro
+subscription. On the free tier the notification still fires, worded however
+you configured it in the app — so treat it as the nudge and read the details
+in the issue it opens alongside.
+
 **Free push, no account.** Install [ntfy](https://ntfy.sh), subscribe to a
 topic nobody would guess, set `NTFY_TOPIC`. Anyone who knows a topic name can
 read it, so treat it as unlisted rather than private.
