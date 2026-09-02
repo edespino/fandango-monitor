@@ -63,6 +63,21 @@ python3 fandango_monitor.py                    # one scheduled pass
 python3 -m unittest discover -v                # tests
 ```
 
+### Checking on it later
+
+```sh
+python3 healthcheck.py
+```
+
+Reports whether the scheduler is loaded and running on time, how long since
+the seat maps were read, whether any run has failed, where each theater's
+schedule currently ends, whether the published page is current, and whether
+the two-hourly rebuild has actually been firing. Exits non-zero when something
+needs attention, so it also works from another script.
+
+It reads local state and the published page only — no requests to Fandango,
+so it is cheap to run as often as you like.
+
 ### Installing the scheduler
 
 ```sh
@@ -116,6 +131,7 @@ fandango_monitor.py   the monitor
 template.html         status page template
 test_monitor.py       tests
 fixtures/             real API responses, used by the tests
+healthcheck.py        is any of this actually running?
 publish.sh            regenerate the page and push it
 docs/index.html       generated status page
 ```
