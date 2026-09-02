@@ -5,9 +5,9 @@
 Watches Fandango for a film's showtimes and tells you when two seats open up
 in the part of the auditorium you actually want to sit in.
 
-**Live status: https://edespino.github.io/fandango-monitor/** — rebuilt every
-two hours, showing seats free in each row at both theaters and whether anything
-currently matches.
+**Live status: https://edespino.github.io/fandango-monitor/** — rebuilt hourly,
+showing seats free in each row at both theaters and whether anything currently
+matches.
 
 Built for a specific problem: *The Odyssey* is showing on 70mm IMAX film at two
 Bay Area theaters, every seat from the fourth row back is sold, and the only
@@ -265,7 +265,14 @@ otherwise.
 ### Status page
 
 [`docs/index.html`](https://edespino.github.io/fandango-monitor/) shows where
-things stand, with an Apple Maps link for each theater. It is served from
+things stand, with an Apple Maps link for each theater and a row-by-row chart
+of where the empty seats actually are.
+
+A find is drawn rather than listed: the matched pair appears inside its own
+row, taken and free seats distinguished, placement given in seats either side
+of centre, with a direct link to buy. The header's sprocket holes start moving
+on a find and are still otherwise, so the state reads from across a room.
+`preview.py` renders all of it without waiting for a theater to oblige. It is served from
 GitHub Pages off `main` and `/docs`, so it can be handed to whoever you are
 seeing the film with. (On a fork, turn that on under Settings → Pages.)
 
