@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.fandango-monitor</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>REPO_PATH/fandango_monitor.py</string>
+    <!-- The GitHub Actions job owns docs/index.html; writing it here too
+         would leave the working tree permanently dirty. -->
+    <string>--no-report</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>REPO_PATH</string>
+
+  <key>StartInterval</key>
+  <integer>900</integer>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>REPO_PATH/launchd.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>REPO_PATH/launchd.err.log</string>
+</dict>
+</plist>

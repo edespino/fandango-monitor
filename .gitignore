@@ -1,0 +1,12 @@
+# Runtime files
+state.json
+state.tmp
+monitor.log
+hits.log
+.lock
+
+# Python
+__pycache__/
+*.pyc
+launchd.out.log
+launchd.err.log

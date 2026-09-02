@@ -1,0 +1,52 @@
+name: Update status page
+
+on:
+  schedule:
+    # Every two hours. GitHub queues scheduled jobs, so expect some drift.
+    - cron: "17 */2 * * *"
+  workflow_dispatch:
+
+# Only one run at a time, so two jobs never race to commit the same page.
+concurrency:
+  group: status-page
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Without the previous state every run would rescan 45 days at each
+      # theater. The cache keeps the run cheap.
+      - name: Restore monitor state
+        uses: actions/cache@v4
+        with:
+          path: state.json
+          key: monitor-state-${{ github.run_id }}
+          restore-keys: monitor-state-
+
+      - name: Check showtimes and seats
+        run: python3 fandango_monitor.py --dry-run
+
+      - name: Publish the page
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          if [ -n "$(git status --porcelain docs/)" ]; then
+            git add docs
+            git commit -m "Update seat availability"
+            git push
+          else
+            echo "nothing changed"
+          fi
