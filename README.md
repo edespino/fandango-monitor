@@ -66,15 +66,21 @@ variables → Actions.
 repo, which GitHub emails you and pushes to the GitHub mobile app. That needs
 no account and no secrets. Everything below is an upgrade on it.
 
-**Free text message, via your carrier's email gateway.** No account beyond a
-mailbox to send from. Set `SMS_EMAIL` to your number at the carrier's domain —
-`5551234567@txt.att.net` for AT&T, `@tmomail.net` for T-Mobile — plus
-`SMTP_USER` and `SMTP_PASS` for the sending mailbox. Gmail needs an app
+**Free text message, via your carrier's email gateway** — if your carrier
+still runs one. Set `SMS_EMAIL` to your number at the carrier's domain, plus
+`SMTP_USER` and `SMTP_PASS` for the mailbox to send from. Gmail needs an app
 password rather than your login. `SMTP_HOST` defaults to `smtp.gmail.com`.
 
-Carriers have been shutting these gateways down, so confirm yours still
-works with a test send before relying on it. A failure logs a warning and
-the issue fallback still fires.
+Carriers are shutting these down. Checked 2026-09-01:
+
+| Carrier | Domain | State |
+| --- | --- | --- |
+| AT&T | `txt.att.net`, `mms.att.net` | **Gone** — no DNS records |
+| Verizon | `vtext.com` | MX records present |
+| T-Mobile | `tmomail.net` | MX records present |
+
+Confirm yours resolves before relying on it — `dig +short MX <domain>` is
+enough. A failed send warns and leaves the issue fallback to carry it.
 
 **Free push, no account.** Install [ntfy](https://ntfy.sh), subscribe to a
 topic nobody would guess, set `NTFY_TOPIC`. Anyone who knows a topic name can
