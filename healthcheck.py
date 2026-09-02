@@ -30,12 +30,13 @@ import fandango_monitor as fm  # noqa: E402
 LOCAL_SCHEDULER = False
 
 LABEL = "com.user.fandango-monitor"
+TRIGGER_LABEL = "com.user.odyssey-imessage"
 REPO = fm.REPO_URL.replace("https://github.com/", "") if fm.REPO_URL else ""
 PAGE = "https://edespino.github.io/fandango-monitor/"
 STATUS_JSON = PAGE + "status.json"
 
 # How late something has to be before it is worth mentioning.
-RUN_GRACE = timedelta(minutes=35)     # runs every 15 min
+RUN_GRACE = timedelta(minutes=90)     # the Mac triggers hourly
 SWEEP_GRACE = timedelta(hours=10)     # a few scheduled runs a day
 PAGE_GRACE = timedelta(hours=10)      # a few runs a day, cron drifts
 
@@ -140,10 +141,12 @@ def check_state():
 
 
 def check_schedule():
+    """The workflow has no cron; the Mac triggers it. What matters is that
+    something succeeded recently, not what pressed the button."""
     if not REPO or not shutil.which("gh"):
         return
     result = run(["gh", "run", "list", "--repo", REPO, "--workflow", "status.yml",
-                  "--limit", "5", "--json", "event,conclusion,createdAt"])
+                  "--limit", "10", "--json", "event,conclusion,createdAt"])
     if not result or result.returncode != 0:
         line(INFO, "Could not read workflow runs (gh not authenticated?)")
         return
@@ -151,16 +154,38 @@ def check_schedule():
         runs = json.loads(result.stdout)
     except ValueError:
         return
-    scheduled = [r for r in runs if r.get("event") == "schedule"]
-    if not scheduled:
-        line(WARN, "The scheduled workflow has never fired on its own",
-             "only manual runs so far; if this persists the page will go stale")
+    done = [r for r in runs if r.get("conclusion") == "success"]
+    if not done:
+        line(BAD, "No successful workflow run at all",
+             f"gh run list --repo {REPO} --workflow status.yml")
         return
-    newest = max(scheduled, key=lambda r: r["createdAt"])
+    newest = max(done, key=lambda r: r["createdAt"])
     when = datetime.fromisoformat(newest["createdAt"].replace("Z", "+00:00"))
-    bad = newest.get("conclusion") not in (None, "success")
-    line(BAD if bad else OK,
-         f"Scheduled page rebuild {ago(when)} ({newest.get('conclusion')})")
+    late = datetime.now(timezone.utc) - when > RUN_GRACE
+    line(WARN if late else OK,
+         f"Last successful run {ago(when)}" +
+         (" — the Mac should have triggered one by now" if late else ""),
+         "is com.user.odyssey-imessage loaded?" if late else "")
+
+
+def check_trigger():
+    """Nothing runs unless the Mac agent is alive, so say so plainly."""
+    if not shutil.which("launchctl"):
+        return
+    uid = subprocess.run(["id", "-u"], capture_output=True, text=True).stdout.strip()
+    result = run(["launchctl", "print", f"gui/{uid}/{TRIGGER_LABEL}"])
+    if not result or result.returncode != 0:
+        line(BAD, "The trigger agent is not loaded — nothing will run",
+             f"launchctl bootstrap gui/{uid} "
+             f"~/Library/LaunchAgents/{TRIGGER_LABEL}.plist")
+        return
+    runs = re.search(r"runs = (\d+)", result.stdout)
+    code = re.search(r"last exit code = (\S+)", result.stdout)
+    code = code.group(1) if code else "?"
+    if code not in ("0", "(never", "(never exited)"):
+        line(BAD, f"Trigger agent last exited {code}", "see imessage.err.log")
+    else:
+        line(OK, f"Trigger agent loaded, {runs.group(1) if runs else 0} run(s)")
 
 
 def check_published_state():
@@ -216,7 +241,8 @@ def main():
         check_state()
         print("\nPublished")
     else:
-        print("Published (this setup runs from the workflow only)")
+        print("Published (a triggered workflow does the work)")
+    check_trigger()
     check_schedule()
     check_page()
     check_published_state()
