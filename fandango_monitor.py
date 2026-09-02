@@ -631,7 +631,9 @@ def check_seats(api, state, alerts):
 
             availability[theater][day] = {}
             for show in screenings:
-                record = {"sold_out": show["sold_out"], "free": 0, "match": None}
+                record = {"sold_out": show["sold_out"], "free": 0,
+                          "match": None, "url": show["url"],
+                          "format": show["format"]}
                 if show["sold_out"] or not show["hash"]:
                     availability[theater][day][show["time"]] = record
                     continue
@@ -669,7 +671,6 @@ def check_seats(api, state, alerts):
                 groups = find_groups(seatmap, target_rows(theater))
                 if groups:
                     record["match"] = groups[0]["seats"]
-                    record["url"] = show["url"]
                     # Keep the whole row so the page can show where in it
                     # the seats sit, not just their numbers.
                     record["strip"] = row_strip(seatmap, groups[0])
@@ -833,6 +834,67 @@ def render_hit(hit) -> str:
     )
 
 
+def minutes_of_day(label: str) -> int:
+    """Sort key for a showtime label.
+
+    Sorting the strings puts "10:10 PM" before "2:10 PM". The two chains
+    also word them differently: Hacienda says "6:10 PM", Metreon says
+    "6 o'clock PM".
+    """
+    text = label.replace("o'clock", "").replace("  ", " ").strip()
+    for fmt in ("%I:%M %p", "%I %p"):
+        try:
+            parsed = datetime.strptime(text, fmt)
+            return parsed.hour * 60 + parsed.minute
+        except ValueError:
+            continue
+    return 0
+
+
+def render_showtimes(state) -> str:
+    """The film's own schedule, per theater, every time linking to its seat map.
+
+    Fandango has no URL that shows one film at one theater, so rather than
+    send people to a page listing everything that theater is showing, the
+    schedule we already fetch is published here.
+    """
+    today = date.today().isoformat()
+    blocks = []
+    for theater, config in THEATERS.items():
+        days = []
+        for day, times in sorted(
+                (state.get("availability", {}).get(theater) or {}).items()):
+            if day < today:
+                continue
+            chips = []
+            for slot, record in sorted(
+                    times.items(),
+                    key=lambda kv: minutes_of_day(kv[0])):
+                classes = ["slot"]
+                if record.get("sold_out"):
+                    classes.append("out")
+                if record.get("match"):
+                    classes.append("got")
+                label = escape(slot.replace(" o'clock", ""))
+                if record.get("url") and not record.get("sold_out"):
+                    chips.append('<a class="{c}" href="{u}">{t}</a>'.format(
+                        c=" ".join(classes), u=escape(record["url"]), t=label))
+                else:
+                    chips.append('<span class="{c}">{t}</span>'.format(
+                        c=" ".join(classes), t=label))
+            if chips:
+                days.append(
+                    '<li><span class="when">{day}</span>'
+                    '<span class="slots">{chips}</span></li>'.format(
+                        day=escape(friendly_day(day)), chips="".join(chips)))
+        if days:
+            blocks.append(
+                '<figure class="showtimes"><figcaption>{name}</figcaption>'
+                '<ul class="days">{days}</ul></figure>'.format(
+                    name=escape(config["name"]), days="".join(days)))
+    return "".join(blocks)
+
+
 def render_rowmap(state) -> str:
     """A row-by-row picture of where the empty seats are, screen at the top."""
     blocks = []
@@ -968,6 +1030,7 @@ def render_report(state) -> str:
         "{{DETAIL}}": detail,
         "{{ROWS}}": "".join(rows),
         "{{ROWMAP}}": render_rowmap(state),
+        "{{SHOWTIMES}}": render_showtimes(state),
         "{{TARGET}}": "; ".join(
             "{} at {}".format(
                 escape("row " + " or ".join(target_rows(code))),

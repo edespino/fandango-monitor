@@ -133,6 +133,26 @@
   .rowline.target .rl{color:var(--ink);font-weight:600}
   .rowline.target .bar{outline:1px solid var(--amber);outline-offset:1px}
   .rowline.empty .rn{color:var(--rust)}
+  .showtimeblocks{display:flex;flex-direction:column;gap:1.6rem}
+  .showtimes{margin:0}
+  .showtimes figcaption{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+                        text-transform:uppercase;color:var(--faint);
+                        margin-bottom:.6rem}
+  .days{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem}
+  .days li{display:grid;grid-template-columns:6.2rem 1fr;gap:.6rem;
+           align-items:baseline;padding-bottom:.4rem;
+           border-bottom:1px solid var(--edge)}
+  .days li:last-child{border-bottom:none}
+  .when{font-family:var(--mono);font-size:.74rem;color:var(--muted);
+        white-space:nowrap}
+  .slots{display:flex;flex-wrap:wrap;gap:.35rem}
+  .slot{font-family:var(--mono);font-size:.76rem;padding:.2rem .5rem;
+        border:1px solid var(--edge);white-space:nowrap;color:var(--ink);
+        text-decoration:none;line-height:1.5}
+  a.slot:hover,a.slot:focus-visible{border-color:var(--amber);color:var(--amber)}
+  .slot.out{color:var(--faint);border-style:dashed;text-decoration:line-through}
+  .slot.got{border-color:var(--moss);color:var(--moss);font-weight:600}
+  @media (max-width:30rem){ .days li{grid-template-columns:1fr;gap:.25rem} }
   .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.75rem;
          counter-reset:step}
   .steps li{padding-left:2.1rem;position:relative}
@@ -181,6 +201,14 @@
         <tbody>{{ROWS}}</tbody>
       </table>
     </div>
+  </section>
+
+  <section>
+    <h2>Every showtime</h2>
+    <p>The Odyssey only, at both theaters. Fandango has no page that narrows
+    to one film at one theater, so the schedule is here instead. Times link
+    straight to seat selection; greyed ones are sold out.</p>
+    <div class="showtimeblocks">{{SHOWTIMES}}</div>
   </section>
 
   <section>

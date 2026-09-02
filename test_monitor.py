@@ -505,6 +505,61 @@ class FandangoLinks(unittest.TestCase):
         self.assertNotIn("{{", html)
 
 
+class ShowtimeSchedule(unittest.TestCase):
+    """The film's own schedule is published here, because Fandango has no
+    URL that narrows to one film at one theater."""
+
+    def test_times_sort_chronologically_not_alphabetically(self):
+        # "10:10 PM" sorts before "2:10 PM" as a string.
+        times = ["10:10 PM", "2:10 PM", "6:10 PM", "10:10 AM"]
+        self.assertEqual(sorted(times, key=fm.minutes_of_day),
+                         ["10:10 AM", "2:10 PM", "6:10 PM", "10:10 PM"])
+
+    def test_both_chains_wordings_parse(self):
+        # Hacienda says "6:10 PM"; Metreon says "6 o'clock PM".
+        self.assertEqual(fm.minutes_of_day("6:10 PM"), 18 * 60 + 10)
+        self.assertEqual(fm.minutes_of_day("6 o'clock PM"), 18 * 60)
+        self.assertEqual(fm.minutes_of_day("12 o'clock PM"), 12 * 60)
+
+    def test_an_unparseable_label_does_not_explode(self):
+        self.assertEqual(fm.minutes_of_day("sometime"), 0)
+
+    def _state(self):
+        state = json.loads(json.dumps(fm.EMPTY_STATE))
+        code = next(iter(fm.THEATERS))
+        state["availability"][code] = {"2099-01-01": {
+            "6:10 PM": {"sold_out": False, "free": 20, "match": None,
+                        "url": "https://tickets.example/a"},
+            "10:10 PM": {"sold_out": True, "free": 0, "match": None,
+                         "url": "https://tickets.example/b"},
+            "2:10 PM": {"sold_out": False, "free": 9, "match": ["G16", "G17"],
+                        "url": "https://tickets.example/c"},
+        }}
+        return state
+
+    def test_bookable_times_link_and_sold_out_ones_do_not(self):
+        html = fm.render_showtimes(self._state())
+        self.assertIn('href="https://tickets.example/a"', html)
+        self.assertIn('href="https://tickets.example/c"', html)
+        # A sold-out time is shown for completeness but must not invite a click.
+        self.assertNotIn('href="https://tickets.example/b"', html)
+        self.assertIn("slot out", html)
+
+    def test_a_matching_showtime_is_marked(self):
+        self.assertIn("slot got", fm.render_showtimes(self._state()))
+
+    def test_past_dates_are_dropped(self):
+        state = json.loads(json.dumps(fm.EMPTY_STATE))
+        code = next(iter(fm.THEATERS))
+        state["availability"][code] = {"2000-01-01": {
+            "6:10 PM": {"sold_out": False, "free": 1, "match": None, "url": "x"}}}
+        self.assertEqual(fm.render_showtimes(state), "")
+
+    def test_nothing_renders_before_a_sweep(self):
+        self.assertEqual(
+            fm.render_showtimes(json.loads(json.dumps(fm.EMPTY_STATE))), "")
+
+
 class DerivedFieldsRefresh(unittest.TestCase):
     """Fields read from the API are rewritten each sweep. Writing them only
     when absent means anything added later never reaches theaters already

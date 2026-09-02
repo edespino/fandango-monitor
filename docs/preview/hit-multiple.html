@@ -133,6 +133,26 @@
   .rowline.target .rl{color:var(--ink);font-weight:600}
   .rowline.target .bar{outline:1px solid var(--amber);outline-offset:1px}
   .rowline.empty .rn{color:var(--rust)}
+  .showtimeblocks{display:flex;flex-direction:column;gap:1.6rem}
+  .showtimes{margin:0}
+  .showtimes figcaption{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+                        text-transform:uppercase;color:var(--faint);
+                        margin-bottom:.6rem}
+  .days{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem}
+  .days li{display:grid;grid-template-columns:6.2rem 1fr;gap:.6rem;
+           align-items:baseline;padding-bottom:.4rem;
+           border-bottom:1px solid var(--edge)}
+  .days li:last-child{border-bottom:none}
+  .when{font-family:var(--mono);font-size:.74rem;color:var(--muted);
+        white-space:nowrap}
+  .slots{display:flex;flex-wrap:wrap;gap:.35rem}
+  .slot{font-family:var(--mono);font-size:.76rem;padding:.2rem .5rem;
+        border:1px solid var(--edge);white-space:nowrap;color:var(--ink);
+        text-decoration:none;line-height:1.5}
+  a.slot:hover,a.slot:focus-visible{border-color:var(--amber);color:var(--amber)}
+  .slot.out{color:var(--faint);border-style:dashed;text-decoration:line-through}
+  .slot.got{border-color:var(--moss);color:var(--moss);font-weight:600}
+  @media (max-width:30rem){ .days li{grid-template-columns:1fr;gap:.25rem} }
   .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.75rem;
          counter-reset:step}
   .steps li{padding-left:2.1rem;position:relative}
@@ -181,6 +201,14 @@
         <tbody><tr><th>Regal Hacienda Crossings<span class="addr"><a href="https://maps.apple.com/?ll=37.7062%2C-121.8866&amp;q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&amp;address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568">5000 Dublin Blvd., Dublin, CA 94568</a></span></th><td class="num">1</td><td class="num">2026-09-16</td><td class="num">38 of 243</td><td class="num hit">1</td></tr><tr><th>AMC Metreon 16<span class="addr"><a href="https://maps.apple.com/?ll=37.7845%2C-122.404&amp;q=AMC+Metreon+16&amp;address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103">135 4th Street Suite #3000, San Francisco, CA 94103</a></span></th><td class="num">1</td><td class="num">2026-09-11</td><td class="num">18 of 419</td><td class="num hit">1</td></tr></tbody>
       </table>
     </div>
+  </section>
+
+  <section>
+    <h2>Every showtime</h2>
+    <p>The Odyssey only, at both theaters. Fandango has no page that narrows
+    to one film at one theater, so the schedule is here instead. Times link
+    straight to seat selection; greyed ones are sold out.</p>
+    <div class="showtimeblocks"><figure class="showtimes"><figcaption>Regal Hacienda Crossings</figcaption><ul class="days"><li><span class="when">Fri Sep 18</span><span class="slots"><a class="slot got" href="https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?preview=1">6:10 PM</a></span></li></ul></figure><figure class="showtimes"><figcaption>AMC Metreon 16</figcaption><ul class="days"><li><span class="when">Fri Sep 18</span><span class="slots"><a class="slot got" href="https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?preview=1">6:00 PM</a></span></li></ul></figure></div>
   </section>
 
   <section>
@@ -239,7 +267,7 @@
   </section>
 
   <footer>
-    <span>Page generated <time class="ts mono" datetime="2026-09-02T15:02:46-07:00">Sep 2, 2026 at 3:02 PM PDT</time></span>
+    <span>Page generated <time class="ts mono" datetime="2026-09-02T15:55:18-07:00">Sep 2, 2026 at 3:55 PM PDT</time></span>
     <span>Seat maps last read <time class="ts mono" datetime="2026-09-01T17:33:37-07:00">Sep 1, 5:33 PM PDT</time></span>
     <span>Source and setup at <a href="https://github.com/edespino/fandango-monitor">github.com/edespino/fandango-monitor</a>, licensed <a href="https://github.com/edespino/fandango-monitor/blob/main/LICENSE">Apache 2.0</a></span>
   </footer>
