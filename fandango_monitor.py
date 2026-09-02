@@ -602,16 +602,19 @@ def check_seats(api, state, alerts):
             if not screenings:
                 continue
 
-            if not state.get("poster"):
-                poster = extract_poster(view_model)
-                if poster:
-                    state["poster"] = poster
-            if not state.get("movie_page"):
-                state["movie_page"] = extract_movie_page(view_model)
-            if theater not in state.get("places", {}):
-                place = extract_theater(view_model)
-                if place:
-                    state.setdefault("places", {})[theater] = place
+            poster = extract_poster(view_model)
+            if poster:
+                state["poster"] = poster
+            movie_page = extract_movie_page(view_model)
+            if movie_page:
+                state["movie_page"] = movie_page
+            # Refreshed every sweep rather than written once. A "only if
+            # missing" guard means any field added later never appears for
+            # theaters already on record, which is how the Fandango link
+            # went missing after it was added.
+            place = extract_theater(view_model)
+            if place:
+                state.setdefault("places", {})[theater] = place
 
             times = sorted({s["time"] for s in screenings})
             previous = state["showtimes"].get(theater, {}).get(day)

@@ -505,6 +505,26 @@ class FandangoLinks(unittest.TestCase):
         self.assertNotIn("{{", html)
 
 
+class DerivedFieldsRefresh(unittest.TestCase):
+    """Fields read from the API are rewritten each sweep. Writing them only
+    when absent means anything added later never reaches theaters already
+    on record."""
+
+    def test_extract_theater_returns_every_current_field(self):
+        vm = load("showtimes_hacienda_2026-09-14.json")["viewModel"]
+        place = fm.extract_theater(vm)
+        for key in ("name", "address", "map", "fandango"):
+            self.assertTrue(place.get(key), f"{key} missing")
+
+    def test_a_stale_record_is_replaced_not_kept(self):
+        # An entry saved before "fandango" existed must gain it.
+        vm = load("showtimes_hacienda_2026-09-14.json")["viewModel"]
+        old_record = {"name": "old", "address": "old"}
+        fresh = fm.extract_theater(vm)
+        self.assertNotIn("fandango", old_record)
+        self.assertIn("fandango", fresh)
+
+
 class TemplateProse(unittest.TestCase):
     """The page explains its own cadence, so that prose has to track the
     constants or it quietly starts lying."""
