@@ -11,3 +11,7 @@ __pycache__/
 launchd.out.log
 launchd.err.log
 alerts.json
+imessage.conf
+.imessage-seen.json
+imessage.out.log
+imessage.err.log

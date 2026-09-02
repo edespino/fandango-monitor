@@ -82,6 +82,23 @@ Carriers are shutting these down. Checked 2026-09-01:
 Confirm yours resolves before relying on it — `dig +short MX <domain>` is
 enough. A failed send warns and leaves the issue fallback to carry it.
 
+**A real iMessage, from your Mac.** `imessage_watch.py` reads the published
+`status.json` and texts you when a seat pair appears or the dates extend. It
+never contacts Fandango, so it adds nothing to the request budget above — one
+request to GitHub Pages per run.
+
+```sh
+echo '+15551234567' > imessage.conf     # not tracked
+python3 imessage_watch.py --test        # grant Automation access when asked
+sed "s|REPO_PATH|$PWD|g" com.user.odyssey-imessage.plist \
+  > ~/Library/LaunchAgents/com.user.odyssey-imessage.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.user.odyssey-imessage.plist
+```
+
+Runs every 30 minutes. Needs the Mac awake and Messages signed in, so pair it
+with something cloud-side rather than relying on it alone. Remove it with
+`launchctl bootout gui/$(id -u)/com.user.odyssey-imessage`.
+
 **Pushcut**, for a native iPhone notification. Create a notification in the
 app, then set either `PUSHCUT_URL` to its webhook URL, or `PUSHCUT_KEY` to
 your API key with `PUSHCUT_NOTIFICATION` as its name.
@@ -197,6 +214,7 @@ template.html         status page template
 test_monitor.py       tests
 fixtures/             real API responses, used by the tests
 healthcheck.py        is any of this actually running?
+imessage_watch.py     texts you when the published status changes
 publish.sh            regenerate the page and push it
 docs/index.html       generated status page
 ```
