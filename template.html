@@ -165,7 +165,8 @@
   <section>
     <h2>What this is</h2>
     <p class="lede">{{MOVIE}} is showing on 70mm IMAX film at two Bay Area
-    theaters. We want two seats together, seven rows back, in the middle.
+    theaters. We want two seats together, well back from the screen, in the
+    middle.
     Those seats are gone. This page watches for them to come back.</p>
     {{DETAIL}}
   </section>
@@ -205,12 +206,13 @@
   <section>
     <h2>How it works</h2>
     <ol class="steps">
-      <li><strong>Every 15 minutes</strong> it asks both theaters whether they
+      <li><strong>Every hour</strong> it asks both theaters whether they
       have published showtimes past the last date it knows about. Theaters load
       their schedule about a week ahead, so when the next week drops the entire
       auditorium goes on sale at once. That is the best shot at good seats, and
       it does not last long.</li>
-      <li><strong>Every 2 hours</strong> it reads the seat map of every
+      <li><strong>Once a day, and immediately whenever new dates appear</strong>,
+      it reads the seat map of every
       remaining showtime and looks for two free seats next to each other in the
       middle of the rows we want. Since those rows are completely sold, anything
       appearing there is a cancellation worth moving on.</li>
@@ -231,8 +233,8 @@
     be the end of the 70mm engagement rather than the end of the loaded
     schedule. If no new dates ever appear, there is nothing to catch, and the
     page will say so.</p>
-    <p><strong>This page rebuilds itself every two hours</strong> from a
-    scheduled job, so it stays current on its own. The alerting half runs on a
+    <p><strong>This page rebuilds itself every hour</strong>, so it stays
+    current on its own. The alerting half runs on a
     laptop, which has to be awake to shout.</p>
   </section>
 

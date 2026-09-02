@@ -300,11 +300,14 @@ def extract_theater(view_model):
     if not details.get("name"):
         return None
     geo = details.get("geo") or {}
+    page = details.get("theaterPageUrl") or ""
     entry = {
         "name": details["name"],
         "address": details.get("fullAddress") or "",
         "lat": geo.get("latitude"),
         "lon": geo.get("longitude"),
+        # Fandango hands this over as a relative path.
+        "fandango": (BASE + page) if page.startswith("/") else page,
     }
     query = urllib.parse.urlencode(
         {k: v for k, v in (
@@ -316,6 +319,15 @@ def extract_theater(view_model):
     )
     entry["map"] = f"https://maps.apple.com/?{query}"
     return entry
+
+
+def extract_movie_page(view_model) -> str:
+    """Fandango's page for the film itself, given as a relative path."""
+    for movie in (view_model or {}).get("movies") or []:
+        if movie.get("id") == MOVIE_ID:
+            uri = movie.get("mopURI") or ""
+            return (BASE + uri) if uri.startswith("/") else uri
+    return ""
 
 
 def extract_poster(view_model, width: str = "400"):
@@ -369,6 +381,7 @@ EMPTY_STATE = {
     "matches": {},         # "theater|date|time|row" -> [seat ids]
     "availability": {},    # theater -> {date: {time: {...}}} for the report
     "poster": None,        # artwork for the status page
+    "movie_page": "",      # Fandango's page for the film
     "places": {},          # theater -> address and map link
     "rows": {},            # theater -> per-row seat counts, screen first
     "capacity": {},        # theater -> standard seats in the auditorium
@@ -593,6 +606,8 @@ def check_seats(api, state, alerts):
                 poster = extract_poster(view_model)
                 if poster:
                     state["poster"] = poster
+            if not state.get("movie_page"):
+                state["movie_page"] = extract_movie_page(view_model)
             if theater not in state.get("places", {}):
                 place = extract_theater(view_model)
                 if place:
@@ -730,6 +745,7 @@ def summarise(state):
             "name": name,
             "address": place.get("address", ""),
             "map": place.get("map", ""),
+            "fandango": place.get("fandango", ""),
             "last_day": state.get("frontier", {}).get(theater, "unknown"),
             "shows": shows,
             "free": free,
@@ -855,13 +871,17 @@ def render_report(state) -> str:
     rows = []
     for entry in summary["theaters"]:
         flag = "hit" if entry["matched"] else "gone"
-        if entry.get("map"):
-            label = '<a href="{map}">{name}</a>'.format(
-                map=escape(entry["map"]), name=escape(entry["name"]))
+        if entry.get("fandango"):
+            label = '<a href="{url}">{name}</a>'.format(
+                url=escape(entry["fandango"]), name=escape(entry["name"]))
         else:
             label = escape(entry["name"])
         if entry.get("address"):
-            label += '<span class="addr">{}</span>'.format(escape(entry["address"]))
+            address = escape(entry["address"])
+            if entry.get("map"):
+                address = '<a href="{map}">{address}</a>'.format(
+                    map=escape(entry["map"]), address=address)
+            label += '<span class="addr">{}</span>'.format(address)
         rows.append(
             "<tr><th>{name}</th>"
             "<td class=\"num\">{shows}</td>"
@@ -920,6 +940,9 @@ def render_report(state) -> str:
         poster_html = ""
 
     parts = []
+    if state.get("movie_page"):
+        parts.append('<a href="{}">{} on Fandango</a>'.format(
+            escape(state["movie_page"]), escape(MOVIE_TITLE)))
     if REPO_URL:
         parts.append('Source and setup at <a href="{url}">{label}</a>'.format(
             url=escape(REPO_URL),

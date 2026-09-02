@@ -459,6 +459,63 @@ class HitVisual(unittest.TestCase):
         self.assertNotIn("None", html)
 
 
+class FandangoLinks(unittest.TestCase):
+    """Both links come from the API as relative paths, so they are made
+    absolute rather than assembled from a guessed pattern."""
+
+    def setUp(self):
+        self.vm = load("showtimes_hacienda_2026-09-14.json")["viewModel"]
+
+    def test_theater_page_is_absolute(self):
+        url = fm.extract_theater(self.vm)["fandango"]
+        self.assertTrue(url.startswith("https://www.fandango.com/"))
+        self.assertIn("theater-page", url)
+
+    def test_movie_page_is_absolute(self):
+        url = fm.extract_movie_page(self.vm)
+        self.assertTrue(url.startswith("https://www.fandango.com/"))
+        self.assertIn(str(fm.MOVIE_ID), url)
+
+    def test_missing_paths_are_tolerated(self):
+        self.assertEqual(fm.extract_movie_page({"movies": []}), "")
+        self.assertEqual(
+            fm.extract_theater({"theater": {"details": {"name": "X"}}})["fandango"], "")
+
+    def test_name_links_to_the_schedule_and_address_to_the_map(self):
+        # Each link should go where its words point.
+        state = json.loads(json.dumps(fm.EMPTY_STATE))
+        code = next(iter(fm.THEATERS))
+        state["places"] = {code: {
+            "name": fm.theater_name(code), "address": "1 Example St",
+            "map": "https://maps.apple.com/?q=A",
+            "fandango": "https://www.fandango.com/a-aaaaa/theater-page"}}
+        html = fm.render_report(state)
+        self.assertIn('<a href="https://www.fandango.com/a-aaaaa/theater-page">'
+                      + fm.theater_name(code) + '</a>', html)
+        self.assertIn('<a href="https://maps.apple.com/?q=A">1 Example St</a>', html)
+
+    def test_the_film_is_linked_in_the_footer(self):
+        state = json.loads(json.dumps(fm.EMPTY_STATE))
+        state["movie_page"] = "https://www.fandango.com/x/movie-overview"
+        self.assertIn("on Fandango</a>", fm.render_report(state))
+
+    def test_page_renders_before_the_links_are_known(self):
+        html = fm.render_report(json.loads(json.dumps(fm.EMPTY_STATE)))
+        self.assertNotIn("fandango.com", html)
+        self.assertNotIn("{{", html)
+
+
+class TemplateProse(unittest.TestCase):
+    """The page explains its own cadence, so that prose has to track the
+    constants or it quietly starts lying."""
+
+    def test_no_superseded_cadences(self):
+        css = fm.TEMPLATE_PATH.read_text()
+        for stale in ("Every 15 minutes", "Every 2 hours", "every two hours",
+                      "seven rows back"):
+            self.assertNotIn(stale, css, f"page still claims {stale!r}")
+
+
 class Palette(unittest.TestCase):
     """The page commits to one dark palette. Nothing may be left over from
     the light one, and small text has to stay legible on the dark ground."""

@@ -165,7 +165,8 @@
   <section>
     <h2>What this is</h2>
     <p class="lede">The Odyssey is showing on 70mm IMAX film at two Bay Area
-    theaters. We want two seats together, seven rows back, in the middle.
+    theaters. We want two seats together, well back from the screen, in the
+    middle.
     Those seats are gone. This page watches for them to come back.</p>
     <div class="hit-card"><p class="hit-seats">K17 + K18</p><p class="hit-where">AMC Metreon 16<br>Fri Sep 18 at 6:00 PM</p><div class="rowview"><span class="side">left</span><ol class="strip"><li class="taken"></li><li class="free"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="pick" data-seat="K18"></li><li class="pick" data-seat="K17"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li></ol><span class="side">right</span></div><p class="rowfact">Row K of 34 seats &middot; dead centre</p><a class="book" href="https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?preview=1">Book these seats</a></div>
   </section>
@@ -177,7 +178,7 @@
         <thead>
           <tr><th>Theater</th><th>Showtimes<br>left</th><th>Last day</th><th>Free per<br>showtime</th><th>Matches</th></tr>
         </thead>
-        <tbody><tr><th><a href="https://maps.apple.com/?ll=37.7062%2C-121.8866&amp;q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&amp;address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568">Regal Hacienda Crossings</a><span class="addr">5000 Dublin Blvd., Dublin, CA 94568</span></th><td class="num">0</td><td class="num">2026-09-16</td><td class="num">0 of 243</td><td class="num gone">0</td></tr><tr><th><a href="https://maps.apple.com/?ll=37.7845%2C-122.404&amp;q=AMC+Metreon+16&amp;address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103">AMC Metreon 16</a><span class="addr">135 4th Street Suite #3000, San Francisco, CA 94103</span></th><td class="num">1</td><td class="num">2026-09-11</td><td class="num">18 of 419</td><td class="num hit">1</td></tr></tbody>
+        <tbody><tr><th>Regal Hacienda Crossings<span class="addr"><a href="https://maps.apple.com/?ll=37.7062%2C-121.8866&amp;q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&amp;address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568">5000 Dublin Blvd., Dublin, CA 94568</a></span></th><td class="num">0</td><td class="num">2026-09-16</td><td class="num">0 of 243</td><td class="num gone">0</td></tr><tr><th>AMC Metreon 16<span class="addr"><a href="https://maps.apple.com/?ll=37.7845%2C-122.404&amp;q=AMC+Metreon+16&amp;address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103">135 4th Street Suite #3000, San Francisco, CA 94103</a></span></th><td class="num">1</td><td class="num">2026-09-11</td><td class="num">18 of 419</td><td class="num hit">1</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -205,12 +206,13 @@
   <section>
     <h2>How it works</h2>
     <ol class="steps">
-      <li><strong>Every 15 minutes</strong> it asks both theaters whether they
+      <li><strong>Every hour</strong> it asks both theaters whether they
       have published showtimes past the last date it knows about. Theaters load
       their schedule about a week ahead, so when the next week drops the entire
       auditorium goes on sale at once. That is the best shot at good seats, and
       it does not last long.</li>
-      <li><strong>Every 2 hours</strong> it reads the seat map of every
+      <li><strong>Once a day, and immediately whenever new dates appear</strong>,
+      it reads the seat map of every
       remaining showtime and looks for two free seats next to each other in the
       middle of the rows we want. Since those rows are completely sold, anything
       appearing there is a cancellation worth moving on.</li>
@@ -231,13 +233,13 @@
     be the end of the 70mm engagement rather than the end of the loaded
     schedule. If no new dates ever appear, there is nothing to catch, and the
     page will say so.</p>
-    <p><strong>This page rebuilds itself every two hours</strong> from a
-    scheduled job, so it stays current on its own. The alerting half runs on a
+    <p><strong>This page rebuilds itself every hour</strong>, so it stays
+    current on its own. The alerting half runs on a
     laptop, which has to be awake to shout.</p>
   </section>
 
   <footer>
-    <span>Page generated <time class="ts mono" datetime="2026-09-02T10:32:16-07:00">Sep 2, 2026 at 10:32 AM PDT</time></span>
+    <span>Page generated <time class="ts mono" datetime="2026-09-02T15:02:46-07:00">Sep 2, 2026 at 3:02 PM PDT</time></span>
     <span>Seat maps last read <time class="ts mono" datetime="2026-09-01T17:33:37-07:00">Sep 1, 5:33 PM PDT</time></span>
     <span>Source and setup at <a href="https://github.com/edespino/fandango-monitor">github.com/edespino/fandango-monitor</a>, licensed <a href="https://github.com/edespino/fandango-monitor/blob/main/LICENSE">Apache 2.0</a></span>
   </footer>
