@@ -2,17 +2,21 @@ name: Update status page
 
 on:
   schedule:
-    # Times are UTC; the comments are America/Los_Angeles.
+    # Hourly through waking hours, quiet overnight. Times are UTC; PT in
+    # the comments. Most invocations are the cheap date check (~4 requests);
+    # the expensive seat sweep gates itself on SEAT_SWEEP_INTERVAL and runs
+    # roughly three times a day.
     #
-    # These are an ESTIMATE, not a documented publishing window. Chains
-    # generally load the coming week midweek for the following Friday, so
-    # Tuesday and Wednesday get extra passes. Correct these once a real
-    # schedule drop has been observed in the log.
-    - cron: "0 16 * * *"     # 9am  daily
-    - cron: "0 20 * * *"     # 1pm  daily
-    - cron: "0 1 * * *"      # 6pm  daily (previous day PT)
-    - cron: "0 18 * * 2,3"   # 11am Tue and Wed, the likeliest drop window
+    # Theaters are not known to publish overnight, so the small hours are
+    # skipped. That is an estimate, not a documented window.
+    - cron: "0 13-23 * * *"  # 6am - 4pm PT
+    - cron: "0 0-6 * * *"    # 5pm - 11pm PT
   workflow_dispatch:
+    inputs:
+      test_alert:
+        description: "Send a test message to confirm alerting works"
+        type: boolean
+        default: false
 
 # Only one run at a time, so two jobs never race to commit the same page.
 concurrency:
@@ -43,6 +47,18 @@ jobs:
 
       - name: Check showtimes and seats
         run: python3 fandango_monitor.py --dry-run --alerts-out alerts.json
+
+      # Lets you confirm the alert path works without waiting for a real
+      # find, which would otherwise only be proven at the moment it matters.
+      - name: Add a test alert
+        if: inputs.test_alert
+        run: |
+          jq '. + [{
+            "kind": "test",
+            "title": "Seat monitor test",
+            "body": "Alerting works. This is not a real find.",
+            "url": ""
+          }]' alerts.json > alerts.tmp && mv alerts.tmp alerts.json
 
       # Sends only when something was actually found. Whichever provider has
       # its secrets set is used; with none set this step does nothing, so a

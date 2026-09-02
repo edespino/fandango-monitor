@@ -18,18 +18,27 @@ It reads Fandango's public JSON endpoints. It does not buy anything.
 
 ## What it checks
 
-| Check | Requests |
-| --- | --- |
-| Dates published beyond the last known showtime | ~4 |
-| Every seat map at every showtime | ~120 |
+The two checks cost very different amounts and are worth very different
+things, so they run at different rates.
 
-Runs a few times a day from a scheduled workflow, weighted toward the midweek
-window when chains usually load the coming week. That is an estimate rather
-than a documented publishing time, and the cron comments say so.
+| Check | How often | Requests | Finds |
+| --- | --- | --- | --- |
+| Dates published past the last known showtime | hourly | ~8 | A whole week going on sale at once |
+| Every seat map at every showtime | ~3x a day | ~120 | A cancellation in a sold-out row |
 
-About 400 requests a day, spaced 1.5 seconds apart. Fandango's `robots.txt`
-disallows `/napi/*`, so keep the frequency modest and expect no cooperation if
-it is raised.
+The first is the one that matters. When a theater loads its next week the
+entire auditorium opens at once, and that window is short — so it is worth
+checking often precisely because it is cheap. The second only turns up
+cancellations in rows that are already fully sold, which is rare enough not to
+justify the cost of running it at the same rate.
+
+That works out to roughly 500 requests a day, spaced 1.5 seconds apart, with
+new dates found within about an hour. The workflow runs hourly through waking
+hours and stops overnight; the seat sweep gates itself on
+`SEAT_SWEEP_INTERVAL` regardless of how often the workflow fires.
+
+Fandango's `robots.txt` disallows `/napi/*`, so keep the frequency modest and
+expect no cooperation if it is raised.
 
 The first run is larger: it scans about 45 days at each theater to find where
 the film's schedule currently ends.

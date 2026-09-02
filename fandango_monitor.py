@@ -54,11 +54,19 @@ PARTY_SIZE = 2        # seats needed, side by side
 # How often
 # ---------------------------------------------------------------------------
 
-# The script is expected to run every 15 minutes. Each check decides for
-# itself whether enough time has passed to be worth doing again.
-SEAT_SWEEP_INTERVAL = 2 * 3600
+# The two checks cost very different amounts and are worth very different
+# things, so they run at different rates.
+#
+# Looking for newly published dates costs about 8 requests and is the signal
+# that matters: when a theater loads its next week the whole auditorium opens
+# at once. That happens on every invocation.
+#
+# Reading every seat map costs about 120 requests and only finds
+# cancellations in rows that are already fully sold, so it gates itself to a
+# few times a day.
+SEAT_SWEEP_INTERVAL = 8 * 3600
 
-DATE_PROBE_NEAR = 1     # dates past the frontier checked on every run
+DATE_PROBE_NEAR = 3     # dates past the frontier checked on every run
 DATE_PROBE_WIDE = 14    # dates past the frontier checked on a seat-sweep run
 BOOTSTRAP_DAYS = 45     # how far ahead the very first run looks
 RUN_END_WARN_DAYS = 2   # warn when the last known date is this close
