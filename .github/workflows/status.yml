@@ -22,6 +22,8 @@ on:
     # fires for this repo, rather than waiting blind. Each run is the cheap
     # date check, about 8 requests.
     - cron: "7 8-12 * * *"
+    # 12:50am PDT, asked for explicitly to watch one fire.
+    - cron: "50 7 * * *"
   workflow_dispatch:
     inputs:
       test_alert:
