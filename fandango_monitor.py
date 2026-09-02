@@ -457,7 +457,13 @@ def bootstrap_theater(api, state, theater, calendar, alerts):
     log(f"{theater}: plays on {len(playing)} dates, through {state['frontier'][theater]}")
 
 
-def check_dates(api, state, alerts, wide: bool):
+def check_dates(api, state, alerts, wide: bool) -> bool:
+    """Look for showtimes published past what we already knew about.
+
+    Returns True if any theater gained dates, which is the cue to read the
+    seat maps immediately rather than waiting for the next interval.
+    """
+    anything_new = False
     today = date.today()
     for theater, name in THEATERS.items():
         calendar = [d for d in api.calendar(theater) if d >= today.isoformat()]
@@ -466,6 +472,7 @@ def check_dates(api, state, alerts, wide: bool):
 
         if theater not in state["frontier"]:
             bootstrap_theater(api, state, theater, calendar, alerts)
+            anything_new = True
             continue
 
         frontier = state["frontier"][theater]
@@ -488,6 +495,7 @@ def check_dates(api, state, alerts, wide: bool):
                 found.append((day, screenings))
 
         if found:
+            anything_new = True
             days = [day for day, _ in found]
             state["movie_dates"].setdefault(theater, [])
             state["movie_dates"][theater] = sorted(
@@ -517,6 +525,8 @@ def check_dates(api, state, alerts, wide: bool):
         state["movie_dates"][theater] = [
             d for d in state["movie_dates"].get(theater, []) if d >= today.isoformat()
         ]
+
+    return anything_new
 
 
 def check_seats(api, state, alerts):
@@ -855,8 +865,13 @@ def run_checks(api, state, force: bool):
     now = time.time()
     sweep_due = force or (now - state.get("last_seat_sweep", 0)) >= SEAT_SWEEP_INTERVAL
 
-    check_dates(api, state, alerts, wide=sweep_due)
-    if sweep_due:
+    # Newly published dates mean a whole auditorium just opened. That is the
+    # one moment the wanted rows are actually free, so read the seat maps now
+    # instead of waiting up to SEAT_SWEEP_INTERVAL for the next pass.
+    found_new = check_dates(api, state, alerts, wide=sweep_due)
+    if sweep_due or found_new:
+        if found_new and not sweep_due:
+            log("new dates found, reading seat maps now")
         check_seats(api, state, alerts)
     return alerts
 

@@ -24,7 +24,12 @@ things, so they run at different rates.
 | Check | How often | Requests | Finds |
 | --- | --- | --- | --- |
 | Dates published past the last known showtime | hourly | ~8 | A whole week going on sale at once |
-| Every seat map at every showtime | ~3x a day | ~120 | A cancellation in a sold-out row |
+| Every seat map at every showtime | ~3x a day, **and immediately whenever new dates appear** | ~120 | A cancellation in a sold-out row |
+
+New dates trigger a seat sweep in the same run. A week going on sale is the
+one moment the wanted rows are actually empty, and waiting hours for the next
+scheduled pass would miss it — so that single alert can name the dates and the
+seats together.
 
 The first is the one that matters. When a theater loads its next week the
 entire auditorium opens at once, and that window is short — so it is worth

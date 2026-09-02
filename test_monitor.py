@@ -321,6 +321,69 @@ class RepoLink(unittest.TestCase):
             fm.REPO_URL = original
 
 
+class StubApi:
+    """Enough of the client for check_dates, with no network."""
+
+    def __init__(self, calendar, playing):
+        self._calendar = calendar
+        self._playing = playing          # {date: bool}
+        self.seatmaps_read = 0
+
+    def calendar(self, theater):
+        return list(self._calendar)
+
+    def showtimes(self, theater, day=None):
+        if not self._playing.get(day):
+            return None
+        return {"movies": [{
+            "id": fm.MOVIE_ID,
+            "title": fm.MOVIE_TITLE,
+            "variants": [{"amenityGroups": [{
+                "amenityString": "IMAX® 70MM Film, Reserved seating",
+                "showtimes": [{
+                    "screenReaderTime": "6:10 PM",
+                    "showtimeHashCode": f"hash-{day}",
+                    "isSoldOut": False,
+                    "ticketingJumpPageURL": "https://tickets.example/x",
+                }],
+            }]}],
+        }]}
+
+
+class SweepOnNewDates(unittest.TestCase):
+    """A new week going on sale is the one moment the wanted rows are free,
+    so the seat maps must be read then, not up to SEAT_SWEEP_INTERVAL later."""
+
+    def _state(self, frontier):
+        state = json.loads(json.dumps(fm.EMPTY_STATE))
+        for code in fm.THEATERS:
+            state["frontier"][code] = frontier
+            state["movie_dates"][code] = [frontier]
+        return state
+
+    def test_new_dates_are_reported(self):
+        api = StubApi(["2099-01-01", "2099-01-02", "2099-01-03"],
+                      {"2099-01-01": True, "2099-01-02": True})
+        state = self._state("2099-01-01")
+        alerts = []
+        found = fm.check_dates(api, state, alerts, wide=False)
+        self.assertTrue(found)
+        self.assertTrue(any(a["kind"] == "new-dates" for a in alerts))
+
+    def test_no_new_dates_returns_false(self):
+        api = StubApi(["2099-01-01", "2099-01-02"], {"2099-01-01": True})
+        state = self._state("2099-01-01")
+        self.assertFalse(fm.check_dates(api, state, [], wide=False))
+
+    def test_the_frontier_advances(self):
+        api = StubApi(["2099-01-01", "2099-01-02", "2099-01-03", "2099-01-04"],
+                      {d: True for d in ["2099-01-01", "2099-01-02", "2099-01-03"]})
+        state = self._state("2099-01-01")
+        fm.check_dates(api, state, [], wide=False)
+        for code in fm.THEATERS:
+            self.assertEqual(state["frontier"][code], "2099-01-03")
+
+
 class AppleScriptQuoting(unittest.TestCase):
     def test_quotes_and_backslashes_are_escaped(self):
         self.assertEqual(fm.applescript_string('a "b" \\c'), '"a \\"b\\" \\\\c"')
