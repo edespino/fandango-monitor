@@ -44,10 +44,37 @@ Wheelchair spaces and companion seats are excluded. They report as available
 but are not general seating, and there are enough of them at the edges of a row
 to make an auditorium look far emptier than it is.
 
+## Getting told
+
+The scheduled run writes `alerts.json` and a workflow step sends it on, but
+only if you give it somewhere to send. With no secrets set the step does
+nothing, which is why a fresh clone is quiet.
+
+**Never put a phone number in the repo.** These go in Settings → Secrets and
+variables → Actions.
+
+For a real SMS, via Twilio:
+
+| Secret | Value |
+| --- | --- |
+| `TWILIO_SID` | Account SID |
+| `TWILIO_TOKEN` | Auth token |
+| `TWILIO_FROM` | Your Twilio number, `+1...` |
+| `ALERT_TO` | Where to text, `+1...` |
+
+For a free phone push instead, install the [ntfy](https://ntfy.sh) app,
+subscribe to a topic nobody else would guess, and set `NTFY_TOPIC` to it.
+Anyone who knows a topic name can read it, so treat it as unlisted rather
+than private.
+
+Both can be set at once. Neither is required for the status page.
+
 ## Alerts
 
-macOS notification with sound, repeated three times, written to `hits.log`,
-with the ticketing link copied to the clipboard:
+Every alert is written to `hits.log`, sent onward by the workflow if a
+provider is configured, and — when the monitor is run locally rather than from
+the workflow — raised as a macOS notification with the ticketing link copied to
+the clipboard:
 
 - new dates published
 - a showtime added to a date already on sale

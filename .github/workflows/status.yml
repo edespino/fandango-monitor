@@ -42,7 +42,47 @@ jobs:
           restore-keys: monitor-state-
 
       - name: Check showtimes and seats
-        run: python3 fandango_monitor.py --dry-run
+        run: python3 fandango_monitor.py --dry-run --alerts-out alerts.json
+
+      # Sends only when something was actually found. Whichever provider has
+      # its secrets set is used; with none set this step does nothing, so a
+      # fork works without any configuration.
+      - name: Send alert
+        env:
+          TWILIO_SID: ${{ secrets.TWILIO_SID }}
+          TWILIO_TOKEN: ${{ secrets.TWILIO_TOKEN }}
+          TWILIO_FROM: ${{ secrets.TWILIO_FROM }}
+          ALERT_TO: ${{ secrets.ALERT_TO }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          set -euo pipefail
+          count=$(jq 'length' alerts.json)
+          echo "$count alert(s)"
+          if [ "$count" -eq 0 ]; then exit 0; fi
+
+          # Keep it inside one SMS where possible.
+          text=$(jq -r '.[] | "\(.title): \(.body)"' alerts.json | head -c 900)
+          link=$(jq -r '[.[] | select(.url != "")][0].url // ""' alerts.json)
+          if [ -n "$link" ]; then text="$text  $link"; fi
+
+          sent=0
+          if [ -n "${TWILIO_SID:-}" ] && [ -n "${ALERT_TO:-}" ]; then
+            curl -fsS -X POST \
+              "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_SID/Messages.json" \
+              --data-urlencode "To=$ALERT_TO" \
+              --data-urlencode "From=$TWILIO_FROM" \
+              --data-urlencode "Body=$text" \
+              -u "$TWILIO_SID:$TWILIO_TOKEN" > /dev/null
+            echo "sent via Twilio"; sent=1
+          fi
+          if [ -n "${NTFY_TOPIC:-}" ]; then
+            curl -fsS -H "Title: Odyssey seats" -H "Priority: high" \
+              -d "$text" "https://ntfy.sh/$NTFY_TOPIC" > /dev/null
+            echo "sent via ntfy"; sent=1
+          fi
+          if [ "$sent" -eq 0 ]; then
+            echo "::warning::Alerts found but no notification provider is configured"
+          fi
 
       - name: Publish the page
         env:

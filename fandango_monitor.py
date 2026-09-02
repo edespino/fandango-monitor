@@ -867,6 +867,9 @@ def main(argv=None):
                         help="where to write the status page")
     parser.add_argument("--no-report", action="store_true",
                         help="skip writing the status page")
+    parser.add_argument("--alerts-out", metavar="PATH",
+                        help="write this run's alerts as JSON, for a notifier "
+                             "to pick up (always written, even when empty)")
     args = parser.parse_args(argv)
 
     state = load_state(STATE_PATH)
@@ -912,6 +915,12 @@ def main(argv=None):
         state["failure_alerted"] = False
 
     deliver(alerts, args.dry_run)
+
+    if args.alerts_out:
+        # Always written, so a notifier can tell "no alerts" from "the run
+        # never got this far".
+        Path(args.alerts_out).write_text(json.dumps(alerts, indent=1))
+        log(f"{len(alerts)} alert(s) written to {args.alerts_out}")
 
     if not args.no_report:
         try:

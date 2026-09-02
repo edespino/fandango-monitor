@@ -10,3 +10,4 @@ __pycache__/
 *.pyc
 launchd.out.log
 launchd.err.log
+alerts.json
