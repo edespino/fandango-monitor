@@ -251,6 +251,53 @@ class TheaterDetails(unittest.TestCase):
         self.assertNotIn("{{", html)
 
 
+class RowMap(unittest.TestCase):
+    def _state(self):
+        state = json.loads(json.dumps(fm.EMPTY_STATE))
+        code = next(iter(fm.THEATERS))
+        state["rows"] = {code: [
+            {"row": "A", "free": 414, "total": 1403},
+            {"row": "F", "free": 0, "total": 1952},
+            {"row": "G", "free": 0, "total": 1952},
+        ]}
+        return state, code
+
+    def test_bars_scale_to_the_busiest_row(self):
+        state, _ = self._state()
+        html = fm.render_rowmap(state)
+        self.assertIn('style="width:100%"', html)
+        self.assertIn('style="width:0%"', html)
+
+    def test_target_rows_are_marked(self):
+        state, _ = self._state()
+        html = fm.render_rowmap(state)
+        self.assertIn('class="rowline target empty"', html)
+        self.assertNotIn('class="rowline target"><span class="rl">A', html)
+
+    def test_rowmap_is_empty_before_a_sweep(self):
+        self.assertEqual(fm.render_rowmap(json.loads(json.dumps(fm.EMPTY_STATE))), "")
+
+    def test_rowmap_reaches_the_page(self):
+        state, _ = self._state()
+        html = fm.render_report(state)
+        self.assertIn('class="rowmap"', html)
+        self.assertNotIn("{{", html)
+
+    def test_free_per_showtime_replaces_the_raw_total(self):
+        state, code = self._state()
+        state["availability"][code] = {
+            "2099-01-01": {
+                "6:10 PM": {"sold_out": False, "free": 20, "match": None},
+                "9:10 PM": {"sold_out": False, "free": 28, "match": None},
+            }
+        }
+        state["capacity"] = {code: 243}
+        summary = fm.summarise(state)
+        row = [t for t in summary["theaters"] if t["code"] == code][0]
+        self.assertEqual(row["per_show"], 24)
+        self.assertEqual(row["capacity"], 243)
+
+
 class AppleScriptQuoting(unittest.TestCase):
     def test_quotes_and_backslashes_are_escaped(self):
         self.assertEqual(fm.applescript_string('a "b" \\c'), '"a \\"b\\" \\\\c"')

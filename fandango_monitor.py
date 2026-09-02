@@ -315,6 +315,8 @@ EMPTY_STATE = {
     "availability": {},    # theater -> {date: {time: {...}}} for the report
     "poster": None,        # artwork for the status page
     "places": {},          # theater -> address and map link
+    "rows": {},            # theater -> per-row seat counts, screen first
+    "capacity": {},        # theater -> standard seats in the auditorium
     "last_seat_sweep": 0.0,
     "last_report": {},     # summary numbers for the status page
     "failures": 0,
@@ -508,6 +510,7 @@ def check_seats(api, state, alerts):
     today = date.today().isoformat()
     seen_matches = {}
     availability = {}
+    row_tally = {}
 
     for theater, name in THEATERS.items():
         availability[theater] = {}
@@ -557,6 +560,27 @@ def check_seats(api, state, alerts):
                     1 for s in seatmap.get("seats", [])
                     if s.get("type") == "standard" and s.get("status") == "A"
                 )
+
+                # Every showtime here is the same auditorium, so its
+                # standard-seat count is the capacity to measure against.
+                state.setdefault("capacity", {})[theater] = sum(
+                    1 for s in seatmap.get("seats", []) if s.get("type") == "standard"
+                )
+
+                # Per-row totals, so the page can show where the empty
+                # seats actually are rather than just how many there are.
+                tally = row_tally.setdefault(theater, {})
+                for entry in seatmap.get("seats", []):
+                    if entry.get("type") != "standard":
+                        continue
+                    row = seat_row(entry)
+                    if not row:
+                        continue
+                    slot = tally.setdefault(row, {"y": entry.get("y", 0),
+                                                  "free": 0, "total": 0})
+                    slot["total"] += 1
+                    if entry.get("status") == "A":
+                        slot["free"] += 1
                 groups = find_groups(seatmap)
                 if groups:
                     record["match"] = groups[0]["seats"]
@@ -574,6 +598,13 @@ def check_seats(api, state, alerts):
 
     state["matches"] = seen_matches
     state["availability"] = availability
+    state["rows"] = {
+        theater: [
+            {"row": row, "free": counts["free"], "total": counts["total"]}
+            for row, counts in sorted(rows.items(), key=lambda kv: kv[1]["y"])
+        ]
+        for theater, rows in row_tally.items()
+    }
     state["last_seat_sweep"] = time.time()
 
 
@@ -616,7 +647,11 @@ def summarise(state):
                         "seats": record["match"],
                     })
         place = state.get("places", {}).get(theater, {})
+        capacity = state.get("capacity", {}).get(theater, 0)
+        per_show = round(free / shows) if shows else 0
         theaters.append({
+            "capacity": capacity,
+            "per_show": per_show,
             "code": theater,
             "name": name,
             "address": place.get("address", ""),
@@ -627,6 +662,37 @@ def summarise(state):
             "matched": matched,
         })
     return {"theaters": theaters, "hits": hits}
+
+
+def render_rowmap(state) -> str:
+    """A row-by-row picture of where the empty seats are, screen at the top."""
+    blocks = []
+    for theater, name in THEATERS.items():
+        rows = state.get("rows", {}).get(theater) or []
+        if not rows:
+            continue
+        peak = max((row["free"] for row in rows), default=0) or 1
+        items = []
+        for row in rows:
+            width = round(100 * row["free"] / peak, 1)
+            classes = ["rowline"]
+            if row["row"] in TARGET_ROWS:
+                classes.append("target")
+            if not row["free"]:
+                classes.append("empty")
+            items.append(
+                '<li class="{cls}"><span class="rl">{row}</span>'
+                '<span class="bar"><i style="width:{width:g}%"></i></span>'
+                '<span class="rn">{free}</span></li>'.format(
+                    cls=" ".join(classes), row=escape(row["row"]),
+                    width=width, free=row["free"])
+            )
+        blocks.append(
+            '<figure class="rowmap"><figcaption>{name}</figcaption>'
+            '<p class="screen">screen</p><ol class="rows">{items}</ol></figure>'.format(
+                name=escape(name), items="".join(items))
+        )
+    return "".join(blocks)
 
 
 def render_report(state) -> str:
@@ -654,7 +720,8 @@ def render_report(state) -> str:
                 name=label,
                 shows=entry["shows"],
                 last=escape(entry["last_day"]),
-                free=entry["free"],
+                free=("{} of {}".format(entry["per_show"], entry["capacity"])
+                      if entry["capacity"] else str(entry["per_show"])),
                 matched=entry["matched"],
                 flag=flag,
             )
@@ -715,6 +782,7 @@ def render_report(state) -> str:
         "{{HEADLINE_CLASS}}": headline_class,
         "{{DETAIL}}": detail,
         "{{ROWS}}": "".join(rows),
+        "{{ROWMAP}}": render_rowmap(state),
         "{{TARGET}}": escape(
             f"row {' or '.join(TARGET_ROWS)}, middle {CENTRE_SEATS} seats, "
             f"{PARTY_SIZE} together"

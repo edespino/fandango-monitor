@@ -85,6 +85,31 @@
   ul.hits strong{font-size:1.05rem}
   .target{background:var(--panel);border-left:3px solid var(--amber);padding:1rem 1.2rem}
   .target p{margin:0;font-size:.97rem}
+  .lede{font-size:1.1rem;line-height:1.55}
+  .maps{display:flex;flex-direction:column;gap:2rem}
+  @media (min-width:34rem){ .maps{flex-direction:row} }
+  .rowmap{margin:0;flex:1;min-width:0}
+  .rowmap figcaption{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+                     text-transform:uppercase;color:var(--faint);margin-bottom:.6rem}
+  .screen{margin:0 0 .5rem;text-align:center;font-family:var(--mono);font-size:.6rem;
+          letter-spacing:.34em;text-transform:uppercase;color:var(--ground);
+          background:var(--ink);border-radius:0 0 60% 60%/0 0 100% 100%;padding:.2rem 0 .3rem}
+  .rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+  .rowline{display:grid;grid-template-columns:1.1rem 1fr 2.2rem;align-items:center;gap:.5rem}
+  .rl{font-family:var(--mono);font-size:.72rem;color:var(--faint)}
+  .bar{background:var(--panel);height:.85rem;position:relative;overflow:hidden}
+  .bar i{position:absolute;inset:0 auto 0 0;background:var(--amber);opacity:.75}
+  .rn{font-family:var(--mono);font-size:.72rem;text-align:right;
+      font-variant-numeric:tabular-nums;color:var(--muted)}
+  .rowline.target .rl{color:var(--ink);font-weight:600}
+  .rowline.target .bar{outline:1px solid var(--amber);outline-offset:1px}
+  .rowline.empty .rn{color:var(--rust)}
+  .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.75rem;
+         counter-reset:step}
+  .steps li{padding-left:2.1rem;position:relative}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;
+    top:.05em;font-family:var(--mono);font-size:.7rem;color:var(--amber);
+    border:1px solid var(--edge);width:1.45rem;height:1.45rem;display:grid;place-items:center}
   footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--edge);
          padding-top:1rem;display:flex;flex-direction:column;gap:.25rem}
   .mono{font-family:var(--mono)}
@@ -106,7 +131,11 @@
   </header>
 
   <section>
-    <p>Every seat in rows F and G is taken across all 99 remaining showtimes. The monitor keeps checking.</p>
+    <h2>What this is</h2>
+    <p class="lede">The Odyssey is showing on 70mm IMAX film at two Bay Area
+    theaters. We want two seats together, seven rows back, in the middle.
+    Those seats are gone. This page watches for them to come back.</p>
+    <p>Every seat in rows F and G is taken across all 105 remaining showtimes. The monitor keeps checking.</p>
   </section>
 
   <section>
@@ -114,11 +143,20 @@
     <div class="scroll">
       <table>
         <thead>
-          <tr><th>Theater</th><th>Showtimes</th><th>Last day</th><th>Seats free<br>all shows</th><th>Matches</th></tr>
+          <tr><th>Theater</th><th>Showtimes<br>left</th><th>Last day</th><th>Free per<br>showtime</th><th>Matches</th></tr>
         </thead>
-        <tbody><tr><th><a href="https://maps.apple.com/?ll=37.7062%2C-121.8866&amp;q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&amp;address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568">Regal Hacienda Crossings</a><span class="addr">5000 Dublin Blvd., Dublin, CA 94568</span></th><td class="num">59</td><td class="num">2026-09-16</td><td class="num">1407</td><td class="num gone">0</td></tr><tr><th><a href="https://maps.apple.com/?ll=37.7845%2C-122.404&amp;q=AMC+Metreon+16&amp;address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103">AMC Metreon 16</a><span class="addr">135 4th Street Suite #3000, San Francisco, CA 94103</span></th><td class="num">40</td><td class="num">2026-09-11</td><td class="num">1123</td><td class="num gone">0</td></tr></tbody>
+        <tbody><tr><th><a href="https://maps.apple.com/?ll=37.7062%2C-121.8866&amp;q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&amp;address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568">Regal Hacienda Crossings</a><span class="addr">5000 Dublin Blvd., Dublin, CA 94568</span></th><td class="num">61</td><td class="num">2026-09-16</td><td class="num">24 of 243</td><td class="num gone">0</td></tr><tr><th><a href="https://maps.apple.com/?ll=37.7845%2C-122.404&amp;q=AMC+Metreon+16&amp;address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103">AMC Metreon 16</a><span class="addr">135 4th Street Suite #3000, San Francisco, CA 94103</span></th><td class="num">44</td><td class="num">2026-09-11</td><td class="num">27 of 419</td><td class="num gone">0</td></tr></tbody>
       </table>
     </div>
+  </section>
+
+  <section>
+    <h2>Where the empty seats are</h2>
+    <p>Each bar is one row, screen at the top, counting every seat still free
+    across all remaining showtimes. The pattern is the whole problem: the front
+    rows go unsold every single show, and everything from the middle back is
+    gone. The outlined rows are the ones we want.</p>
+    <div class="maps"><figure class="rowmap"><figcaption>Regal Hacienda Crossings</figcaption><p class="screen">screen</p><ol class="rows"><li class="rowline"><span class="rl">A</span><span class="bar"><i style="width:100%"></i></span><span class="rn">1257</span></li><li class="rowline"><span class="rl">B</span><span class="bar"><i style="width:12.6%"></i></span><span class="rn">158</span></li><li class="rowline"><span class="rl">C</span><span class="bar"><i style="width:2.4%"></i></span><span class="rn">30</span></li><li class="rowline empty"><span class="rl">D</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline"><span class="rl">E</span><span class="bar"><i style="width:0.2%"></i></span><span class="rn">2</span></li><li class="rowline target empty"><span class="rl">F</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline target empty"><span class="rl">G</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">H</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">I</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li></ol></figure><figure class="rowmap"><figcaption>AMC Metreon 16</figcaption><p class="screen">screen</p><ol class="rows"><li class="rowline"><span class="rl">A</span><span class="bar"><i style="width:100%"></i></span><span class="rn">761</span></li><li class="rowline"><span class="rl">B</span><span class="bar"><i style="width:50.5%"></i></span><span class="rn">384</span></li><li class="rowline"><span class="rl">C</span><span class="bar"><i style="width:2.9%"></i></span><span class="rn">22</span></li><li class="rowline empty"><span class="rl">D</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">E</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline target empty"><span class="rl">F</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline target empty"><span class="rl">G</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">H</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">J</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">K</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">L</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline"><span class="rl">M</span><span class="bar"><i style="width:0.1%"></i></span><span class="rn">1</span></li><li class="rowline"><span class="rl">N</span><span class="bar"><i style="width:0.1%"></i></span><span class="rn">1</span></li></ol></figure></div>
   </section>
 
   <section>
@@ -126,11 +164,49 @@
     <div class="target">
       <p>row F or G, middle 8 seats, 2 together &mdash; wheelchair spaces and companion seats excluded.</p>
     </div>
+    <p style="margin-top:1rem">Those last two look available in the seat map but
+    are not general seating. At one of these theaters every free seat in a whole
+    row turned out to be one or the other, which makes an auditorium look far
+    emptier than it is.</p>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><strong>Every 15 minutes</strong> it asks both theaters whether they
+      have published showtimes past the last date it knows about. Theaters load
+      their schedule about a week ahead, so when the next week drops the entire
+      auditorium goes on sale at once. That is the best shot at good seats, and
+      it does not last long.</li>
+      <li><strong>Every 2 hours</strong> it reads the seat map of every
+      remaining showtime and looks for two free seats next to each other in the
+      middle of the rows we want. Since those rows are completely sold, anything
+      appearing there is a cancellation worth moving on.</li>
+      <li><strong>It re-reads the schedule each time</strong> rather than
+      trusting a stored copy, because showtimes shift and get added mid-week. A
+      fixed list would have gone stale within days.</li>
+      <li><strong>When it finds something</strong> a notification fires naming
+      the theater, showtime and exact seat numbers, and the ticket link is
+      copied ready to paste.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Worth knowing</h2>
+    <p><strong>It does not buy anything.</strong> A person still picks the seats
+    and enters the card, so nothing gets charged without a look first.</p>
+    <p><strong>The run might just end.</strong> The last days listed above may
+    be the end of the 70mm engagement rather than the end of the loaded
+    schedule. If no new dates ever appear, there is nothing to catch, and the
+    page will say so.</p>
+    <p><strong>This page rebuilds itself every two hours</strong> from a
+    scheduled job, so it stays current on its own. The alerting half runs on a
+    laptop, which has to be awake to shout.</p>
   </section>
 
   <footer>
-    <span>Page generated <time class="ts mono" datetime="2026-09-02T00:31:39+00:00">Sep 2, 2026 at 12:31 AM UTC</time></span>
-    <span>Seat maps last read <time class="ts mono" datetime="2026-09-02T00:31:39+00:00">Sep 2, 12:31 AM UTC</time></span>
+    <span>Page generated <time class="ts mono" datetime="2026-09-01T17:35:17-07:00">Sep 1, 2026 at 5:35 PM PDT</time></span>
+    <span>Seat maps last read <time class="ts mono" datetime="2026-09-01T17:33:37-07:00">Sep 1, 5:33 PM PDT</time></span>
   </footer>
 </div>
 <script>
