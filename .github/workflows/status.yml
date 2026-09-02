@@ -16,6 +16,12 @@ on:
     # skipped. That is an estimate, not a documented window.
     - cron: "37 13-23 * * *"  # 6am - 4pm PT
     - cron: "37 0-6 * * *"    # 5pm - 11pm PT
+    # TEMPORARY probe, remove once answered. The ranges above skip UTC
+    # hours 7-12, so after a miss at 06:37 the next real slot was six hours
+    # out. This fills that gap to find out whether GitHub's scheduler ever
+    # fires for this repo, rather than waiting blind. Each run is the cheap
+    # date check, about 8 requests.
+    - cron: "7 8-12 * * *"
   workflow_dispatch:
     inputs:
       test_alert:
