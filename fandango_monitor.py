@@ -21,6 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date, datetime
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -70,10 +71,16 @@ PARTY_SIZE = 2        # seats needed, side by side
 # that matters: when a theater loads its next week the whole auditorium opens
 # at once. That happens on every invocation.
 #
-# Reading every seat map costs about 120 requests and only finds
-# cancellations in rows that are already fully sold, so it gates itself to a
-# few times a day.
-SEAT_SWEEP_INTERVAL = 8 * 3600
+# Reading every seat map costs about 150 requests and only finds
+# cancellations in rows that are already fully sold, so it runs once a day at
+# a set local hour rather than on an interval. A wall clock is used, not an
+# elapsed time, because the runner is UTC and "once a day at 8am" should mean
+# the reader's 8am regardless.
+#
+# New dates override this and sweep immediately, whatever the hour: that is
+# the one moment the wanted rows are actually empty.
+SWEEP_HOUR = 8
+SWEEP_TZ = "America/Los_Angeles"
 
 DATE_PROBE_NEAR = 3     # dates past the frontier checked on every run
 DATE_PROBE_WIDE = 14    # dates past the frontier checked on a seat-sweep run
@@ -887,14 +894,29 @@ def write_report(state, destination: Path):
 # ---------------------------------------------------------------------------
 
 
+def sweep_is_due(state, force: bool) -> bool:
+    """Once per local day, at or after SWEEP_HOUR.
+
+    Elapsed-time gating would drift and would not honour a local hour, so
+    this compares calendar days in SWEEP_TZ instead.
+    """
+    if force:
+        return True
+    zone = ZoneInfo(SWEEP_TZ)
+    now = datetime.now(zone)
+    last = state.get("last_seat_sweep") or 0
+    if last and datetime.fromtimestamp(last, zone).date() == now.date():
+        return False
+    return now.hour >= SWEEP_HOUR
+
+
 def run_checks(api, state, force: bool):
     alerts = []
-    now = time.time()
-    sweep_due = force or (now - state.get("last_seat_sweep", 0)) >= SEAT_SWEEP_INTERVAL
+    sweep_due = sweep_is_due(state, force)
 
     # Newly published dates mean a whole auditorium just opened. That is the
     # one moment the wanted rows are actually free, so read the seat maps now
-    # instead of waiting up to SEAT_SWEEP_INTERVAL for the next pass.
+    # instead of waiting for tomorrow's scheduled pass.
     found_new = check_dates(api, state, alerts, wide=sweep_due)
     if sweep_due or found_new:
         if found_new and not sweep_due:

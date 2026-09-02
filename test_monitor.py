@@ -8,6 +8,8 @@ the shapes the monitor actually meets rather than invented ones.
 import json
 import re
 import unittest
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import urllib.error as urllib_error
 from unittest import mock
 from pathlib import Path
@@ -405,6 +407,51 @@ class BlockedBehaviour(unittest.TestCase):
         self.assertLessEqual(fm.FAILURE_THRESHOLD, 4)
 
 
+class DailySweep(unittest.TestCase):
+    """Once per local day at SWEEP_HOUR, whatever timezone the runner is in."""
+
+    ZONE = ZoneInfo(fm.SWEEP_TZ)
+
+    def _at(self, hour, day=2):
+        return datetime(2026, 9, day, hour, 30, tzinfo=self.ZONE).timestamp()
+
+    def _state(self, last=None):
+        state = json.loads(json.dumps(fm.EMPTY_STATE))
+        if last:
+            state["last_seat_sweep"] = last
+        return state
+
+    def _due(self, state, now):
+        with mock.patch("fandango_monitor.datetime") as dt:
+            dt.now.return_value = datetime.fromtimestamp(now, self.ZONE)
+            dt.fromtimestamp = datetime.fromtimestamp
+            return fm.sweep_is_due(state, force=False)
+
+    def test_not_before_the_hour(self):
+        self.assertFalse(self._due(self._state(), self._at(6)))
+
+    def test_due_at_the_hour(self):
+        self.assertTrue(self._due(self._state(), self._at(8)))
+
+    def test_not_twice_in_one_day(self):
+        state = self._state(last=self._at(8))
+        self.assertFalse(self._due(state, self._at(15)))
+
+    def test_due_again_the_next_day(self):
+        state = self._state(last=self._at(8, day=2))
+        self.assertTrue(self._due(state, self._at(9, day=3)))
+
+    def test_a_missed_day_is_caught_late(self):
+        # Machine off all morning: sweep on the first run after it returns,
+        # rather than skipping the day entirely.
+        state = self._state(last=self._at(8, day=1))
+        self.assertTrue(self._due(state, self._at(23, day=2)))
+
+    def test_force_ignores_the_clock(self):
+        state = self._state(last=self._at(8))
+        self.assertTrue(fm.sweep_is_due(state, force=True))
+
+
 class StubApi:
     """Enough of the client for check_dates, with no network."""
 
@@ -436,7 +483,7 @@ class StubApi:
 
 class SweepOnNewDates(unittest.TestCase):
     """A new week going on sale is the one moment the wanted rows are free,
-    so the seat maps must be read then, not up to SEAT_SWEEP_INTERVAL later."""
+    so the seat maps must be read then, not at tomorrow's scheduled sweep."""
 
     def _state(self, frontier):
         state = json.loads(json.dumps(fm.EMPTY_STATE))

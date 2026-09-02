@@ -37,7 +37,7 @@ STATUS_JSON = PAGE + "status.json"
 
 # How late something has to be before it is worth mentioning.
 RUN_GRACE = timedelta(minutes=90)     # the Mac triggers hourly
-SWEEP_GRACE = timedelta(hours=10)     # a few scheduled runs a day
+SWEEP_GRACE = timedelta(hours=30)     # the sweep runs once a day
 PAGE_GRACE = timedelta(hours=10)      # a few runs a day, cron drifts
 
 OK, WARN, BAD, INFO = "  ok  ", " warn ", " FAIL ", "      "

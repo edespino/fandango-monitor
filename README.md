@@ -24,7 +24,7 @@ things, so they run at different rates.
 | Check | How often | Requests | Finds |
 | --- | --- | --- | --- |
 | Dates published past the last known showtime | hourly | ~8 | A whole week going on sale at once |
-| Every seat map at every showtime | ~3x a day, **and immediately whenever new dates appear** | ~120 | A cancellation in a sold-out row |
+| Every seat map at every showtime | once a day at 8am PT, **and immediately whenever new dates appear** | ~150 | A cancellation in a sold-out row |
 
 New dates trigger a seat sweep in the same run. A week going on sale is the
 one moment the wanted rows are actually empty, and waiting hours for the next
@@ -37,8 +37,13 @@ checking often precisely because it is cheap. The second only turns up
 cancellations in rows that are already fully sold, which is rare enough not to
 justify the cost of running it at the same rate.
 
-That works out to roughly 500 requests a day, spaced 1.5 seconds apart, with
+That works out to roughly 340 requests a day, spaced 1.5 seconds apart, with
 new dates found within about an hour.
+
+The sweep is on a wall clock rather than an interval, because the runner is UTC
+and "once a day at 8am" should mean the reader's 8am. `SWEEP_HOUR` and
+`SWEEP_TZ` set it. A day missed because the machine was off is swept on the
+next run rather than skipped.
 
 **The workflow has no schedule.** GitHub's cron produced nothing across eight
 slots in eight hours here, at two different minutes, and the documentation is

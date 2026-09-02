@@ -31,7 +31,8 @@ class Thresholds(unittest.TestCase):
         # A check that fires every 15 minutes must not be called overdue
         # the moment it is a second late.
         self.assertGreater(hc.RUN_GRACE, timedelta(minutes=15))
-        self.assertGreater(hc.SWEEP_GRACE, timedelta(seconds=hc.fm.SEAT_SWEEP_INTERVAL))
+        # The sweep runs once a day, so the grace must exceed a day.
+        self.assertGreater(hc.SWEEP_GRACE, timedelta(hours=24))
         self.assertGreater(hc.PAGE_GRACE, timedelta(hours=2))
 
 
