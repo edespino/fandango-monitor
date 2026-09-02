@@ -459,6 +459,50 @@ class HitVisual(unittest.TestCase):
         self.assertNotIn("None", html)
 
 
+class Palette(unittest.TestCase):
+    """The page commits to one dark palette. Nothing may be left over from
+    the light one, and small text has to stay legible on the dark ground."""
+
+    LIGHT_ONLY = ["#F2EDE3", "#E7E0D2", "#CFC5B2", "#1A1614",
+                  "#5F6B6F", "#8A8377", "#A85E14", "#96331F", "#41663F"]
+
+    def setUp(self):
+        self.css = fm.TEMPLATE_PATH.read_text()
+
+    def test_no_light_palette_literals_remain(self):
+        for colour in self.LIGHT_ONLY:
+            self.assertNotIn(colour, self.css,
+                             f"{colour} belonged to the light palette")
+
+    def test_theme_switching_is_gone(self):
+        # Committing to one world means no half-applied overrides.
+        self.assertNotIn("prefers-color-scheme", self.css)
+        self.assertNotIn("data-theme", self.css)
+
+    def test_the_ground_is_painted(self):
+        # A page that does not state its own background borrows the host's.
+        self.assertIn("background:var(--ground)", self.css)
+        self.assertIn("color-scheme:dark", self.css)
+
+    def test_small_text_colours_clear_the_contrast_threshold(self):
+        def luminance(hexcolour):
+            parts = [int(hexcolour[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+            parts = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+                     for c in parts]
+            return 0.2126 * parts[0] + 0.7152 * parts[1] + 0.0722 * parts[2]
+
+        def contrast(fore, back):
+            hi, lo = sorted([luminance(fore), luminance(back)], reverse=True)
+            return (hi + 0.05) / (lo + 0.05)
+
+        ground = "#141110"
+        # --faint carries row letters and addresses at 0.72rem.
+        for token in ("#E9E3D7", "#97A0A3", "#867E72", "#E0A055"):
+            self.assertGreaterEqual(
+                contrast(token, ground), 4.5,
+                f"{token} is too dim on {ground} for small text")
+
+
 class HeaderState(unittest.TestCase):
     """The header carries the state so it can react. Nothing should move
     while we are only waiting."""
