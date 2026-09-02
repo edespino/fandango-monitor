@@ -272,6 +272,28 @@ def find_groups(seatmap, rows, centre=CENTRE_SEATS, party=PARTY_SIZE):
     return results
 
 
+def row_strip(seatmap, group):
+    """One row, left to right, marking taken, free, and the pair we want.
+
+    Seat numbers alone do not say whether a pair is dead centre or against
+    the wall, which is the whole question.
+    """
+    seats = bookable_row(seatmap, group["row"])
+    if not seats:
+        return None
+    picked = set(group["seats"])
+    return {
+        "row": group["row"],
+        "offset": group["offset"],
+        "seats": [
+            {"id": seat["id"],
+             "state": "pick" if seat["id"] in picked
+                      else ("free" if seat["status"] == "A" else "taken")}
+            for seat in seats
+        ],
+    }
+
+
 def extract_theater(view_model):
     """Name, address and map link for the theater a response came from."""
     details = ((view_model or {}).get("theater") or {}).get("details") or {}
@@ -629,6 +651,10 @@ def check_seats(api, state, alerts):
                 groups = find_groups(seatmap, target_rows(theater))
                 if groups:
                     record["match"] = groups[0]["seats"]
+                    record["url"] = show["url"]
+                    # Keep the whole row so the page can show where in it
+                    # the seats sit, not just their numbers.
+                    record["strip"] = row_strip(seatmap, groups[0])
                 for group in groups:
                     key = f"{theater}|{day}|{show['time']}|{group['row']}"
                     seen_matches[key] = group["seats"]
@@ -691,6 +717,8 @@ def summarise(state):
                         "day": day,
                         "time": slot,
                         "seats": record["match"],
+                        "url": record.get("url", ""),
+                        "strip": record.get("strip"),
                     })
         place = state.get("places", {}).get(theater, {})
         capacity = state.get("capacity", {}).get(theater, 0)
@@ -708,6 +736,82 @@ def summarise(state):
             "matched": matched,
         })
     return {"theaters": theaters, "hits": hits}
+
+
+def seat_label(seats):
+    """Seat numbers run right to left in these rooms, so sort for reading."""
+    def key(seat_id):
+        match = SEAT_ID.match(seat_id)
+        return (match.group(1), int(match.group(2))) if match else (seat_id, 0)
+    return " + ".join(sorted(seats, key=key))
+
+
+def friendly_day(iso: str) -> str:
+    try:
+        return date.fromisoformat(iso).strftime("%a %b %-d")
+    except ValueError:
+        return iso
+
+
+def describe_placement(strip) -> str:
+    """How far off centre, in seats. Pixels mean nothing to a reader."""
+    seats = strip["seats"]
+    picks = [i for i, seat in enumerate(seats) if seat["state"] == "pick"]
+    if not picks:
+        return ""
+    middle = (len(seats) - 1) / 2
+    off = (picks[0] + picks[-1]) / 2 - middle
+    if abs(off) < 1:
+        return "dead centre"
+    side = "right" if off > 0 else "left"
+    n = round(abs(off))
+    return f"{n} seat{'s' if n != 1 else ''} {side} of centre"
+
+
+def render_hit(hit) -> str:
+    """One found pair, drawn in its row so the placement is visible."""
+    strip = hit.get("strip")
+    if strip:
+        cells = "".join(
+            '<li class="{state}"{label}></li>'.format(
+                state=seat["state"],
+                label=' data-seat="{}"'.format(escape(seat["id"]))
+                      if seat["state"] == "pick" else "",
+            )
+            for seat in strip["seats"]
+        )
+        picture = (
+            '<div class="rowview">'
+            '<span class="side">left</span>'
+            '<ol class="strip">{cells}</ol>'
+            '<span class="side">right</span>'
+            '</div>'
+            '<p class="rowfact">Row {row} of {n} seats &middot; {off}</p>'
+        ).format(
+            cells=cells,
+            row=escape(strip["row"]),
+            n=len(strip["seats"]),
+            off=escape(describe_placement(strip)),
+        )
+    else:
+        picture = ""
+
+    book = ('<a class="book" href="{}">Book these seats</a>'.format(escape(hit["url"]))
+            if hit.get("url") else "")
+    return (
+        '<div class="hit-card">'
+        '<p class="hit-seats">{seats}</p>'
+        '<p class="hit-where">{theater}<br>{day} at {time}</p>'
+        '{picture}{book}'
+        '</div>'
+    ).format(
+        seats=escape(seat_label(hit["seats"])),
+        theater=escape(hit["theater"]),
+        day=escape(friendly_day(hit["day"])),
+        time=escape(hit["time"]),
+        picture=picture,
+        book=book,
+    )
 
 
 def render_rowmap(state) -> str:
@@ -777,16 +881,7 @@ def render_report(state) -> str:
     if summary["hits"]:
         headline = "Seats are open right now"
         headline_class = "hit"
-        items = "".join(
-            "<li><strong>{seats}</strong> &mdash; {theater}, {day} at {time}</li>".format(
-                seats=escape(" + ".join(hit["seats"])),
-                theater=escape(hit["theater"]),
-                day=escape(hit["day"]),
-                time=escape(hit["time"]),
-            )
-            for hit in summary["hits"]
-        )
-        detail = f"<ul class=\"hits\">{items}</ul>"
+        detail = "".join(render_hit(hit) for hit in summary["hits"])
     else:
         headline = "Nothing matching yet"
         headline_class = "waiting"

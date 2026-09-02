@@ -407,6 +407,58 @@ class BlockedBehaviour(unittest.TestCase):
         self.assertLessEqual(fm.FAILURE_THRESHOLD, 4)
 
 
+class HitVisual(unittest.TestCase):
+    """A found pair is drawn in its row, because seat numbers alone do not
+    say whether the pair is central or against a wall."""
+
+    def _strip(self, index):
+        seatmap = load("seatmap_metreon_g.json")
+        row = fm.bookable_row(seatmap, "K")
+        for seat in row:
+            seat["status"] = "R"
+        row[index]["status"] = row[index + 1]["status"] = "A"
+        groups = fm.find_groups(seatmap, ("K",), centre=len(row))
+        return fm.row_strip(seatmap, groups[0])
+
+    def test_strip_covers_the_whole_row(self):
+        strip = self._strip(16)
+        self.assertEqual(len(strip["seats"]), 34)
+        self.assertEqual(sum(1 for s in strip["seats"] if s["state"] == "pick"), 2)
+
+    def test_states_are_only_the_three_we_render(self):
+        for seat in self._strip(16)["seats"]:
+            self.assertIn(seat["state"], {"taken", "free", "pick"})
+
+    def test_centre_pair_reads_as_centre(self):
+        self.assertEqual(fm.describe_placement(self._strip(16)), "dead centre")
+
+    def test_edge_pair_reads_as_off_centre(self):
+        self.assertIn("left of centre", fm.describe_placement(self._strip(2)))
+
+    def test_seat_numbers_are_sorted_for_reading(self):
+        # Numbers run right to left in these rooms, so raw order reads backwards.
+        self.assertEqual(fm.seat_label(["K18", "K17"]), "K17 + K18")
+
+    def test_dates_are_humanised(self):
+        self.assertEqual(fm.friendly_day("2026-09-11"), "Fri Sep 11")
+        self.assertEqual(fm.friendly_day("not a date"), "not a date")
+
+    def test_the_card_carries_a_booking_link(self):
+        hit = {"theater": "X", "day": "2026-09-11", "time": "6:00 PM",
+               "seats": ["K17", "K18"], "url": "https://tickets.example/go",
+               "strip": self._strip(16)}
+        html = fm.render_hit(hit)
+        self.assertIn('href="https://tickets.example/go"', html)
+        self.assertIn("K17 + K18", html)
+        self.assertIn("dead centre", html)
+
+    def test_a_hit_without_a_strip_still_renders(self):
+        html = fm.render_hit({"theater": "X", "day": "2026-09-11",
+                              "time": "6:00 PM", "seats": ["K17"], "url": ""})
+        self.assertIn("K17", html)
+        self.assertNotIn("None", html)
+
+
 class DailySweep(unittest.TestCase):
     """Once per local day at SWEEP_HOUR, whatever timezone the runner is in."""
 

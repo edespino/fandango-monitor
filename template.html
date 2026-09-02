@@ -79,10 +79,30 @@
   td.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
   td.gone{color:var(--rust);font-weight:600}
   td.hit{color:var(--moss);font-weight:600}
-  ul.hits{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.6rem}
-  ul.hits li{background:var(--panel);border-left:3px solid var(--moss);
-             padding:.8rem 1rem;font-family:var(--mono);font-size:.9rem}
-  ul.hits strong{font-size:1.05rem}
+  /* a found pair, drawn in its row */
+  .hit-card{background:var(--panel);border:1px solid var(--moss);
+            border-left:4px solid var(--moss);padding:1.15rem 1.25rem;
+            margin-bottom:1rem;display:flex;flex-direction:column;gap:.55rem}
+  .hit-seats{font-family:var(--disp);font-size:2rem;font-weight:600;
+             letter-spacing:.02em;margin:0;color:var(--moss);line-height:1}
+  .hit-where{margin:0;font-size:.95rem;line-height:1.35}
+  .rowview{display:flex;align-items:center;gap:.6rem;margin-top:.35rem}
+  .side{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;
+        text-transform:uppercase;color:var(--faint);flex:none}
+  .strip{list-style:none;margin:0;padding:0;display:flex;gap:2px;flex:1;
+         min-width:0;align-items:stretch}
+  .strip li{flex:1 1 0;min-width:3px;height:1.5rem;border-radius:1px;
+            background:var(--edge)}
+  .strip li.free{background:var(--amber);opacity:.45}
+  .strip li.taken{background:var(--edge)}
+  .strip li.pick{background:var(--moss);position:relative;
+                 box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--moss)}
+  .rowfact{margin:0;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+  a.book{align-self:flex-start;margin-top:.3rem;font-family:var(--disp);
+         text-transform:uppercase;letter-spacing:.06em;font-size:.95rem;
+         font-weight:600;background:var(--moss);color:var(--ground);
+         text-decoration:none;padding:.5rem 1.1rem}
+  a.book:hover,a.book:focus-visible{background:var(--ink)}
   .target{background:var(--panel);border-left:3px solid var(--amber);padding:1rem 1.2rem}
   .target p{margin:0;font-size:.97rem}
   .lede{font-size:1.1rem;line-height:1.55}
