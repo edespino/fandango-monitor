@@ -25,6 +25,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   update:
@@ -70,6 +71,11 @@ jobs:
           TWILIO_FROM: ${{ secrets.TWILIO_FROM }}
           ALERT_TO: ${{ secrets.ALERT_TO }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMS_EMAIL: ${{ secrets.SMS_EMAIL }}
         run: |
           set -euo pipefail
           count=$(jq 'length' alerts.json)
@@ -96,9 +102,59 @@ jobs:
               -d "$text" "https://ntfy.sh/$NTFY_TOPIC" > /dev/null
             echo "sent via ntfy"; sent=1
           fi
-          if [ "$sent" -eq 0 ]; then
-            echo "::warning::Alerts found but no notification provider is configured"
+          # Carrier email-to-SMS gateway, e.g. 5551234567@txt.att.net for
+          # AT&T. Free and lands as a real text, but carriers have been
+          # retiring these gateways, so treat it as best effort.
+          if [ -n "${SMTP_USER:-}" ] && [ -n "${SMS_EMAIL:-}" ]; then
+            host="${SMTP_HOST:-smtp.gmail.com}"
+            {
+              printf 'From: %s\r\n' "$SMTP_USER"
+              printf 'To: %s\r\n' "$SMS_EMAIL"
+              printf 'Subject: Odyssey seats\r\n'
+              printf '\r\n'
+              # Gateways truncate hard, so send the useful part first.
+              printf '%s\r\n' "$(printf '%s' "$text" | head -c 300)"
+            } > mail.txt
+            if curl -fsS --url "smtps://$host:465" --ssl-reqd \
+                 --mail-from "$SMTP_USER" --mail-rcpt "$SMS_EMAIL" \
+                 --user "$SMTP_USER:$SMTP_PASS" --upload-file mail.txt > /dev/null
+            then
+              echo "sent via email-to-SMS"; sent=1
+            else
+              echo "::warning::email-to-SMS failed; the carrier gateway may be gone"
+            fi
           fi
+          if [ -n "${SLACK_WEBHOOK:-}" ]; then
+            jq -n --arg t "$text" '{text: $t}' \
+              | curl -fsS -X POST -H 'Content-Type: application/json' \
+                     -d @- "$SLACK_WEBHOOK" > /dev/null
+            echo "sent via Slack"; sent=1
+          fi
+          if [ "$sent" -eq 0 ]; then
+            echo "::warning::No push provider configured; falling back to an issue"
+          fi
+          # Written for the next step regardless, so the fallback still runs.
+          printf '%s' "$text" > alert-text.txt
+
+      # Always-on fallback. Needs no account and no secrets: GitHub emails the
+      # repo owner and pushes to the GitHub mobile app. Guarded against
+      # reopening the same alert on a later run.
+      - name: Open an issue
+        if: hashFiles('alert-text.txt') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="Seats: $(head -c 60 alert-text.txt | tr '\n' ' ')"
+          existing=$(gh issue list --state open --label seat-alert \
+                       --search "$(head -c 40 alert-text.txt)" --json number -q 'length')
+          if [ "$existing" != "0" ]; then
+            echo "already reported"; exit 0
+          fi
+          gh label create seat-alert --color B60205 --description "Found seats" \
+            2>/dev/null || true
+          gh issue create --title "$title" --label seat-alert \
+            --body "$(cat alert-text.txt)"$'\n\n'"Found $(date -u '+%Y-%m-%d %H:%M UTC')." 
 
       - name: Publish the page
         env:

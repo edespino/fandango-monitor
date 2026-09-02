@@ -62,21 +62,31 @@ nothing, which is why a fresh clone is quiet.
 **Never put a phone number in the repo.** These go in Settings → Secrets and
 variables → Actions.
 
-For a real SMS, via Twilio:
+**If you configure nothing, it still tells you.** A find opens an issue on the
+repo, which GitHub emails you and pushes to the GitHub mobile app. That needs
+no account and no secrets. Everything below is an upgrade on it.
 
-| Secret | Value |
-| --- | --- |
-| `TWILIO_SID` | Account SID |
-| `TWILIO_TOKEN` | Auth token |
-| `TWILIO_FROM` | Your Twilio number, `+1...` |
-| `ALERT_TO` | Where to text, `+1...` |
+**Free text message, via your carrier's email gateway.** No account beyond a
+mailbox to send from. Set `SMS_EMAIL` to your number at the carrier's domain —
+`5551234567@txt.att.net` for AT&T, `@tmomail.net` for T-Mobile — plus
+`SMTP_USER` and `SMTP_PASS` for the sending mailbox. Gmail needs an app
+password rather than your login. `SMTP_HOST` defaults to `smtp.gmail.com`.
 
-For a free phone push instead, install the [ntfy](https://ntfy.sh) app,
-subscribe to a topic nobody else would guess, and set `NTFY_TOPIC` to it.
-Anyone who knows a topic name can read it, so treat it as unlisted rather
-than private.
+Carriers have been shutting these gateways down, so confirm yours still
+works with a test send before relying on it. A failure logs a warning and
+the issue fallback still fires.
 
-Both can be set at once. Neither is required for the status page.
+**Free push, no account.** Install [ntfy](https://ntfy.sh), subscribe to a
+topic nobody would guess, set `NTFY_TOPIC`. Anyone who knows a topic name can
+read it, so treat it as unlisted rather than private.
+
+**Slack.** Set `SLACK_WEBHOOK` to an incoming webhook URL.
+
+**Paid SMS, via Twilio.** `TWILIO_SID`, `TWILIO_TOKEN`, `TWILIO_FROM` and
+`ALERT_TO`. The most reliable option and the only one that costs money.
+
+Any combination can be set at once; each configured provider gets a copy.
+None are required for the status page.
 
 ## Alerts
 
