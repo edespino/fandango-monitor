@@ -209,9 +209,13 @@ def check_published_state():
             line(OK, f"SEATS: {' + '.join(hit['seats'])} — "
                      f"{hit['theater']}, {hit['day']} {hit['time']}")
     else:
-        target = data.get("target", {})
-        rows = "/".join(target.get("rows", []))
-        line(INFO, f"No pair matching rows {rows} yet")
+        rows = (data.get("target") or {}).get("rows") or {}
+        if isinstance(rows, dict):
+            wanted = ", ".join(
+                f"{'/'.join(v)} at {code}" for code, v in sorted(rows.items()))
+        else:
+            wanted = "/".join(rows)
+        line(INFO, f"No pair yet in {wanted}" if wanted else "No matching pair yet")
 
 
 def check_page():

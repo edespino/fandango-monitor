@@ -30,10 +30,21 @@ from pathlib import Path
 MOVIE_ID = 241283
 MOVIE_TITLE = "The Odyssey"
 
+# Rows are lettered from the screen backward, so row A is the front row, and
+# the wanted rows differ per auditorium: Hacienda has nine rows, Metreon
+# thirteen (A-N, there is no row I), so the same letter is a different seat.
 THEATERS = {
-    "AAOPK": "Regal Hacienda Crossings",
-    "AANEM": "AMC Metreon 16",
+    "AAOPK": {"name": "Regal Hacienda Crossings", "rows": ("F", "G")},
+    "AANEM": {"name": "AMC Metreon 16", "rows": ("J", "K", "L", "M")},
 }
+
+
+def theater_name(code: str) -> str:
+    return THEATERS[code]["name"]
+
+
+def target_rows(code: str):
+    return THEATERS[code]["rows"]
 
 # Only auditoriums whose amenity string contains this token are considered.
 # "IMAX" selects the 70MM presentations at both venues and leaves out the
@@ -45,8 +56,6 @@ REPO_URL = "https://github.com/edespino/fandango-monitor"
 LICENSE_NAME = "Apache 2.0"
 LICENSE_URL = REPO_URL + "/blob/main/LICENSE" if REPO_URL else ""
 
-# Rows are lettered from the screen backward, so row A is the front row.
-TARGET_ROWS = ("F", "G")
 CENTRE_SEATS = 8      # how many seats around the row's midpoint count as centre
 PARTY_SIZE = 2        # seats needed, side by side
 
@@ -223,7 +232,7 @@ def adjacent_runs(seats):
     return runs
 
 
-def find_groups(seatmap, rows=TARGET_ROWS, centre=CENTRE_SEATS, party=PARTY_SIZE):
+def find_groups(seatmap, rows, centre=CENTRE_SEATS, party=PARTY_SIZE):
     """Best available block of `party` seats in each wanted row.
 
     Returns the most central match per row, closest to the middle first.
@@ -465,7 +474,8 @@ def check_dates(api, state, alerts, wide: bool) -> bool:
     """
     anything_new = False
     today = date.today()
-    for theater, name in THEATERS.items():
+    for theater, config in THEATERS.items():
+        name = config["name"]
         calendar = [d for d in api.calendar(theater) if d >= today.isoformat()]
         if not calendar:
             raise MonitorError(f"{theater}: calendar came back empty")
@@ -535,7 +545,8 @@ def check_seats(api, state, alerts):
     availability = {}
     row_tally = {}
 
-    for theater, name in THEATERS.items():
+    for theater, config in THEATERS.items():
+        name = config["name"]
         availability[theater] = {}
         for day in sorted(state["movie_dates"].get(theater, [])):
             if day < today:
@@ -604,7 +615,7 @@ def check_seats(api, state, alerts):
                     slot["total"] += 1
                     if entry.get("status") == "A":
                         slot["free"] += 1
-                groups = find_groups(seatmap)
+                groups = find_groups(seatmap, target_rows(theater))
                 if groups:
                     record["match"] = groups[0]["seats"]
                 for group in groups:
@@ -652,7 +663,8 @@ def summarise(state):
     """Numbers the status page needs, derived from the last sweep."""
     today = date.today().isoformat()
     theaters, hits = [], []
-    for theater, name in THEATERS.items():
+    for theater, config in THEATERS.items():
+        name = config["name"]
         availability = state.get("availability", {}).get(theater, {})
         shows = free = matched = 0
         for day, times in sorted(availability.items()):
@@ -690,7 +702,8 @@ def summarise(state):
 def render_rowmap(state) -> str:
     """A row-by-row picture of where the empty seats are, screen at the top."""
     blocks = []
-    for theater, name in THEATERS.items():
+    for theater, config in THEATERS.items():
+        name = config["name"]
         rows = state.get("rows", {}).get(theater) or []
         if not rows:
             continue
@@ -699,7 +712,7 @@ def render_rowmap(state) -> str:
         for row in rows:
             width = round(100 * row["free"] / peak, 1)
             classes = ["rowline"]
-            if row["row"] in TARGET_ROWS:
+            if row["row"] in target_rows(theater):
                 classes.append("target")
             if not row["free"]:
                 classes.append("empty")
@@ -766,11 +779,15 @@ def render_report(state) -> str:
     else:
         headline = "Nothing matching yet"
         headline_class = "waiting"
+        wanted = "; ".join(
+            "{} at {}".format("/".join(target_rows(code)), escape(config["name"]))
+            for code, config in THEATERS.items()
+        )
         detail = (
-            "<p>Every seat in rows {rows} is taken across all "
-            "{shows} remaining showtimes. The monitor keeps checking.</p>".format(
-                rows=" and ".join(TARGET_ROWS),
+            "<p>Every seat we want is taken across all {shows} remaining "
+            "showtimes &mdash; {wanted}. The monitor keeps checking.</p>".format(
                 shows=sum(t["shows"] for t in summary["theaters"]),
+                wanted=wanted,
             )
         )
 
@@ -819,10 +836,13 @@ def render_report(state) -> str:
         "{{DETAIL}}": detail,
         "{{ROWS}}": "".join(rows),
         "{{ROWMAP}}": render_rowmap(state),
-        "{{TARGET}}": escape(
-            f"row {' or '.join(TARGET_ROWS)}, middle {CENTRE_SEATS} seats, "
-            f"{PARTY_SIZE} together"
-        ),
+        "{{TARGET}}": "; ".join(
+            "{} at {}".format(
+                escape("row " + " or ".join(target_rows(code))),
+                escape(config["name"]))
+            for code, config in THEATERS.items()
+        ) + escape(f" &mdash; middle {CENTRE_SEATS} seats, "
+                   f"{PARTY_SIZE} together").replace("&amp;mdash;", "&mdash;"),
         "{{UPDATED}}": escape(now.strftime("%b %-d, %Y at %-I:%M %p %Z")),
         "{{UPDATED_ISO}}": escape(now.isoformat(timespec="seconds")),
         "{{SWEPT}}": escape(swept_text),
@@ -848,8 +868,11 @@ def write_report(state, destination: Path):
         if swept else None
     )
     summary["movie"] = MOVIE_TITLE
-    summary["target"] = {"rows": list(TARGET_ROWS), "centre": CENTRE_SEATS,
-                         "party": PARTY_SIZE}
+    summary["target"] = {
+        "rows": {code: list(config["rows"]) for code, config in THEATERS.items()},
+        "centre": CENTRE_SEATS,
+        "party": PARTY_SIZE,
+    }
     (destination.parent / "status.json").write_text(
         json.dumps(summary, indent=1, sort_keys=True))
     log(f"status page written to {destination}")

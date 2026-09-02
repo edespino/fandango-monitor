@@ -60,9 +60,19 @@ the film's schedule currently ends.
 
 ## What counts as a match
 
-Two seats, side by side, both in row F or G, both within the middle eight seats
-of the row. Rows are lettered from the screen backward, so row A is the front
-row and G is seven rows back.
+Two seats side by side, both within the middle eight seats of the row, in a row
+that theater's config asks for. Rows are lettered from the screen backward, so
+row A is the front row.
+
+| Theater | Rows | Wanted |
+| --- | --- | --- |
+| Regal Hacienda Crossings | A-I (9 rows) | F, G |
+| AMC Metreon 16 | A-N, no row I (13 rows) | J, K, L, M |
+
+The same letter is a different seat in each room, which is why the target is
+per theater rather than global. A test asserts every configured letter actually
+exists in that auditorium — a row that is not in the room can never match, and
+nothing else would ever mention it.
 
 Wheelchair spaces and companion seats are excluded. They report as available
 but are not general seating, and there are enough of them at the edges of a row

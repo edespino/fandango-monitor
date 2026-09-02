@@ -51,17 +51,17 @@ class AccessibleSeats(unittest.TestCase):
 
 class RealSeatMaps(unittest.TestCase):
     def test_hacienda_target_rows_are_sold_out(self):
-        self.assertEqual(fm.find_groups(load("seatmap_hacienda_g.json")), [])
+        self.assertEqual(fm.find_groups(load("seatmap_hacienda_g.json"), ("F", "G")), [])
 
     def test_metreon_target_rows_are_sold_out(self):
-        self.assertEqual(fm.find_groups(load("seatmap_metreon_g.json")), [])
+        self.assertEqual(fm.find_groups(load("seatmap_metreon_g.json"), ("J", "K", "L", "M")), [])
 
     def test_pair_is_found_when_centre_seats_open_up(self):
         seatmap = load("seatmap_hacienda_g.json")
         for entry in seatmap["seats"]:
             if entry["id"] in ("G16", "G17"):
                 entry["status"] = "A"
-        groups = fm.find_groups(seatmap)
+        groups = fm.find_groups(seatmap, ("F", "G"))
         self.assertEqual(len(groups), 1)
         self.assertEqual(groups[0]["row"], "G")
         self.assertEqual(sorted(groups[0]["seats"]), ["G16", "G17"])
@@ -71,14 +71,14 @@ class RealSeatMaps(unittest.TestCase):
         for entry in seatmap["seats"]:
             if entry["id"] in ("G1", "G2"):
                 entry["status"] = "A"
-        self.assertEqual(fm.find_groups(seatmap), [])
+        self.assertEqual(fm.find_groups(seatmap, ("F", "G")), [])
 
     def test_most_central_pair_wins(self):
         seatmap = load("seatmap_hacienda_g.json")
         for entry in seatmap["seats"]:
             if entry["id"] in ("G13", "G14", "G16", "G17"):
                 entry["status"] = "A"
-        groups = fm.find_groups(seatmap)
+        groups = fm.find_groups(seatmap, ("F", "G"))
         self.assertEqual(sorted(groups[0]["seats"]), ["G16", "G17"])
 
 
@@ -319,6 +319,47 @@ class RepoLink(unittest.TestCase):
             self.assertNotIn("{{", html)
         finally:
             fm.REPO_URL = original
+
+
+class PerTheaterRows(unittest.TestCase):
+    """Row letters mean different seats in different auditoriums, so each
+    theater carries its own target and every letter must actually exist."""
+
+    MAPS = {"AAOPK": "seatmap_hacienda_g.json", "AANEM": "seatmap_metreon_g.json"}
+
+    def test_every_configured_row_exists_in_that_auditorium(self):
+        # A row letter that is not in the room can never match, and nothing
+        # else would ever say so. Metreon has no row I, for instance.
+        for code, fixture in self.MAPS.items():
+            seatmap = load(fixture)
+            present = {fm.seat_row(s) for s in seatmap["seats"]}
+            for row in fm.target_rows(code):
+                self.assertIn(row, present,
+                              f"row {row} is not in {fm.theater_name(code)}")
+
+    def test_the_two_theaters_want_different_rows(self):
+        self.assertNotEqual(fm.target_rows("AAOPK"), fm.target_rows("AANEM"))
+
+    def test_metreon_targets_the_back_half(self):
+        self.assertEqual(fm.target_rows("AANEM"), ("J", "K", "L", "M"))
+
+    def test_metreon_rows_are_sold_out_right_now(self):
+        groups = fm.find_groups(load("seatmap_metreon_g.json"),
+                                fm.target_rows("AANEM"))
+        self.assertEqual(groups, [])
+
+    def test_a_freed_pair_in_a_metreon_row_is_found(self):
+        seatmap = load("seatmap_metreon_g.json")
+        row = sorted([s for s in seatmap["seats"]
+                      if fm.seat_row(s) == "K" and s["type"] == "standard"],
+                     key=lambda s: s["x"])
+        middle = fm.centre_window(row, fm.CENTRE_SEATS)
+        freed = [s for s in row if s["id"] in middle][:2]
+        for seat in freed:
+            seat["status"] = "A"
+        groups = fm.find_groups(seatmap, fm.target_rows("AANEM"))
+        self.assertEqual(len(groups), 1)
+        self.assertEqual(groups[0]["row"], "K")
 
 
 class StubApi:
