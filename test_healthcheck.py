@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Tests for the health check's pure helpers."""
 
+import contextlib
+import io
 import unittest
 from datetime import datetime, timedelta, timezone
 
@@ -30,16 +32,22 @@ class LocalBranch(unittest.TestCase):
     """The local-scheduler path is off by default, so nothing exercises it.
     It still has to work when someone turns it on."""
 
+    @staticmethod
+    def _quiet(fn):
+        # These print their report; the test only cares that they survive.
+        with contextlib.redirect_stdout(io.StringIO()):
+            fn()
+
     def test_check_state_runs_with_the_local_scheduler_on(self):
         original = hc.LOCAL_SCHEDULER
         hc.LOCAL_SCHEDULER = True
         try:
-            hc.check_state()          # must not raise
+            self._quiet(hc.check_state)
         finally:
             hc.LOCAL_SCHEDULER = original
 
     def test_check_agent_runs(self):
-        hc.check_agent()              # must not raise
+        self._quiet(hc.check_agent)
 
 
 class Thresholds(unittest.TestCase):
