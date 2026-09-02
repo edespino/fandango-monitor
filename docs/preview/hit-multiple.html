@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two pairs — The Odyssey Seat Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root{
+    --ground:#F2EDE3; --panel:#E7E0D2; --edge:#CFC5B2;
+    --ink:#1A1614; --muted:#5F6B6F; --faint:#8A8377;
+    --amber:#A85E14; --rust:#96331F; --moss:#41663F; --leader:#1A1614;
+    --disp:"Barlow Condensed",-apple-system,"Helvetica Neue",sans-serif;
+    --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#141110; --panel:#1E1A17; --edge:#332C26;
+      --ink:#E9E3D7; --muted:#97A0A3; --faint:#7A7266;
+      --amber:#E0A055; --rust:#D06248; --moss:#7DA46F; --leader:#000;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#141110; --panel:#1E1A17; --edge:#332C26;
+    --ink:#E9E3D7; --muted:#97A0A3; --faint:#7A7266;
+    --amber:#E0A055; --rust:#D06248; --moss:#7DA46F; --leader:#000;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);
+       font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:44rem;margin:0 auto;padding:0 1.5rem 4rem;
+        display:flex;flex-direction:column;gap:2.5rem}
+  header{margin:0 -1.5rem;background:var(--leader);color:#E9E3D7;
+         padding:2.5rem 1.5rem 2.25rem;position:relative}
+  header::before,header::after{content:"";position:absolute;left:0;right:0;height:13px;
+    background-image:radial-gradient(closest-side,#E9E3D7 76%,transparent 78%);
+    background-size:26px 13px;background-repeat:repeat-x;opacity:.45}
+  header::before{top:7px} header::after{bottom:7px}
+
+  /* Seats open: the film starts running. The perforations travel and warm
+     to lamp colour, which is the projector lighting up rather than a badge
+     bolted on. Nothing moves in the waiting state. */
+  @keyframes advance{to{background-position-x:26px}}
+  @keyframes lamp{
+    0%,100%{opacity:.5}
+    50%{opacity:1}
+  }
+  header.hit::before,header.hit::after{
+    background-image:radial-gradient(closest-side,#F0B860 76%,transparent 78%);
+    animation:advance .9s linear infinite, lamp 2.4s ease-in-out infinite;
+  }
+  header.hit::after{animation-direction:reverse,normal}
+  @media (prefers-reduced-motion:reduce){
+    header.hit::before,header.hit::after{animation:none;opacity:.95}
+  }
+  .eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.2em;
+           text-transform:uppercase;color:#C9A377;margin:0 0 .7rem}
+  h1{font-family:var(--disp);font-weight:600;font-size:clamp(2.3rem,8vw,3.4rem);
+     line-height:.95;margin:0;text-transform:uppercase;text-wrap:balance}
+  .masthead{display:flex;gap:1.5rem;align-items:flex-start}
+  .masthead-text{flex:1;min-width:0}
+  .poster{flex:none;width:118px;height:auto;aspect-ratio:27/40;object-fit:cover;
+          border:1px solid rgba(233,227,215,.2);background:#0B0908;
+          box-shadow:0 8px 26px rgba(0,0,0,.5)}
+  @media (max-width:31rem){
+    .masthead{gap:1rem}
+    .poster{width:84px}
+  }
+  .status{margin:1.4rem 0 0;display:flex;align-items:baseline;gap:.7rem;flex-wrap:wrap}
+  .dot{width:.62rem;height:.62rem;border-radius:50%;flex:none;transform:translateY(-.1em)}
+  .status.waiting .dot{background:#8A8377}
+  .status.hit .dot{background:#7DA46F;box-shadow:0 0 0 4px rgba(125,164,111,.22)}
+  .status-text{font-family:var(--disp);text-transform:uppercase;letter-spacing:.05em;
+               font-size:1.35rem;font-weight:600}
+  .status.hit .status-text{color:#9BC48A}
+  h2{font-family:var(--disp);text-transform:uppercase;letter-spacing:.055em;
+     font-size:1.2rem;font-weight:600;margin:0 0 .8rem;color:var(--amber)}
+  section{display:flex;flex-direction:column}
+  p{margin:0 0 .9rem} p:last-child{margin-bottom:0}
+  .scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:28rem}
+  th,td{text-align:left;padding:.6rem .75rem;border-bottom:1px solid var(--edge)}
+  thead th{font-family:var(--mono);font-size:.64rem;letter-spacing:.13em;
+           text-transform:uppercase;color:var(--faint);font-weight:500}
+  tbody th{font-weight:600;line-height:1.35}
+  tbody th a{color:inherit;text-decoration:none;
+             border-bottom:1px solid var(--amber);padding-bottom:1px}
+  tbody th a:hover,tbody th a:focus-visible{color:var(--amber)}
+  .addr{display:block;font-family:var(--mono);font-size:.72rem;font-weight:400;
+        color:var(--faint);margin-top:.22rem;letter-spacing:.01em}
+  a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  td.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  td.gone{color:var(--rust);font-weight:600}
+  td.hit{color:var(--moss);font-weight:600}
+  /* a found pair, drawn in its row */
+  .hit-card{background:var(--panel);border:1px solid var(--moss);
+            border-left:4px solid var(--moss);padding:1.15rem 1.25rem;
+            margin-bottom:1rem;display:flex;flex-direction:column;gap:.55rem}
+  .hit-seats{font-family:var(--disp);font-size:2rem;font-weight:600;
+             letter-spacing:.02em;margin:0;color:var(--moss);line-height:1}
+  .hit-where{margin:0;font-size:.95rem;line-height:1.35}
+  .rowview{display:flex;align-items:center;gap:.6rem;margin-top:.35rem}
+  .side{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;
+        text-transform:uppercase;color:var(--faint);flex:none}
+  .strip{list-style:none;margin:0;padding:0;display:flex;gap:2px;flex:1;
+         min-width:0;align-items:stretch}
+  .strip li{flex:1 1 0;min-width:3px;height:1.5rem;border-radius:1px;
+            background:var(--edge)}
+  .strip li.free{background:var(--amber);opacity:.45}
+  .strip li.taken{background:var(--edge)}
+  .strip li.pick{background:var(--moss);position:relative;
+                 box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--moss)}
+  .rowfact{margin:0;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+  a.book{align-self:flex-start;margin-top:.3rem;font-family:var(--disp);
+         text-transform:uppercase;letter-spacing:.06em;font-size:.95rem;
+         font-weight:600;background:var(--moss);color:var(--ground);
+         text-decoration:none;padding:.5rem 1.1rem}
+  a.book:hover,a.book:focus-visible{background:var(--ink)}
+  .target{background:var(--panel);border-left:3px solid var(--amber);padding:1rem 1.2rem}
+  .target p{margin:0;font-size:.97rem}
+  .lede{font-size:1.1rem;line-height:1.55}
+  .maps{display:flex;flex-direction:column;gap:2rem}
+  @media (min-width:34rem){ .maps{flex-direction:row} }
+  .rowmap{margin:0;flex:1;min-width:0}
+  .rowmap figcaption{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+                     text-transform:uppercase;color:var(--faint);margin-bottom:.6rem}
+  .screen{margin:0 0 .5rem;text-align:center;font-family:var(--mono);font-size:.6rem;
+          letter-spacing:.34em;text-transform:uppercase;color:var(--ground);
+          background:var(--ink);border-radius:0 0 60% 60%/0 0 100% 100%;padding:.2rem 0 .3rem}
+  .rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+  .rowline{display:grid;grid-template-columns:1.1rem 1fr 2.2rem;align-items:center;gap:.5rem}
+  .rl{font-family:var(--mono);font-size:.72rem;color:var(--faint)}
+  .bar{background:var(--panel);height:.85rem;position:relative;overflow:hidden}
+  .bar i{position:absolute;inset:0 auto 0 0;background:var(--amber);opacity:.75}
+  .rn{font-family:var(--mono);font-size:.72rem;text-align:right;
+      font-variant-numeric:tabular-nums;color:var(--muted)}
+  .rowline.target .rl{color:var(--ink);font-weight:600}
+  .rowline.target .bar{outline:1px solid var(--amber);outline-offset:1px}
+  .rowline.empty .rn{color:var(--rust)}
+  .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:.75rem;
+         counter-reset:step}
+  .steps li{padding-left:2.1rem;position:relative}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;
+    top:.05em;font-family:var(--mono);font-size:.7rem;color:var(--amber);
+    border:1px solid var(--edge);width:1.45rem;height:1.45rem;display:grid;place-items:center}
+  footer a{color:var(--amber);text-decoration:none;
+           border-bottom:1px solid var(--edge);padding-bottom:1px}
+  footer a:hover,footer a:focus-visible{border-color:var(--amber)}
+  footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--edge);
+         padding-top:1rem;display:flex;flex-direction:column;gap:.25rem}
+  .mono{font-family:var(--mono)}
+</style>
+</head>
+<body><p style="margin:0;padding:.55rem 1rem;background:#96331F;color:#F2EDE3;font:600 .78rem/1.3 ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;text-align:center">Preview &mdash; synthetic data, not real availability</p>
+<div class="wrap">
+  <header class="hit">
+    <div class="masthead">
+      <img class="poster" src="https://images.fandango.com/ImageRenderer/400/0/redesign/static/img/default_poster.png/0/images/MasterRepository/fandango/241283/ODY_AdvHorse1Sht1_RGB_2.jpg" srcset="https://images.fandango.com/ImageRenderer/400/0/redesign/static/img/default_poster.png/0/images/MasterRepository/fandango/241283/ODY_AdvHorse1Sht1_RGB_2.jpg 1x, https://images.fandango.com/ImageRenderer/500/0/redesign/static/img/default_poster.png/0/images/MasterRepository/fandango/241283/ODY_AdvHorse1Sht1_RGB_2.jpg 2x" width="400" height="600" loading="eager" decoding="async" alt="The Odyssey poster">
+      <div class="masthead-text">
+        <p class="eyebrow">70mm film print &middot; two venues &middot; party of two</p>
+        <h1>The Odyssey<br>Seat Watch</h1>
+        <div class="status hit">
+          <span class="dot"></span><span class="status-text">Seats are open right now</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>What this is</h2>
+    <p class="lede">The Odyssey is showing on 70mm IMAX film at two Bay Area
+    theaters. We want two seats together, seven rows back, in the middle.
+    Those seats are gone. This page watches for them to come back.</p>
+    <div class="hit-card"><p class="hit-seats">G16 + G17</p><p class="hit-where">Regal Hacienda Crossings<br>Fri Sep 18 at 6:10 PM</p><div class="rowview"><span class="side">left</span><ol class="strip"><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="pick" data-seat="G17"></li><li class="pick" data-seat="G16"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="free"></li></ol><span class="side">right</span></div><p class="rowfact">Row G of 32 seats &middot; dead centre</p><a class="book" href="https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?preview=1">Book these seats</a></div><div class="hit-card"><p class="hit-seats">K17 + K18</p><p class="hit-where">AMC Metreon 16<br>Fri Sep 18 at 6:00 PM</p><div class="rowview"><span class="side">left</span><ol class="strip"><li class="taken"></li><li class="free"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="pick" data-seat="K18"></li><li class="pick" data-seat="K17"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="taken"></li><li class="free"></li></ol><span class="side">right</span></div><p class="rowfact">Row K of 34 seats &middot; dead centre</p><a class="book" href="https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?preview=1">Book these seats</a></div>
+  </section>
+
+  <section>
+    <h2>Where things stand</h2>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>Theater</th><th>Showtimes<br>left</th><th>Last day</th><th>Free per<br>showtime</th><th>Matches</th></tr>
+        </thead>
+        <tbody><tr><th><a href="https://maps.apple.com/?ll=37.7062%2C-121.8866&amp;q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&amp;address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568">Regal Hacienda Crossings</a><span class="addr">5000 Dublin Blvd., Dublin, CA 94568</span></th><td class="num">1</td><td class="num">2026-09-16</td><td class="num">38 of 243</td><td class="num hit">1</td></tr><tr><th><a href="https://maps.apple.com/?ll=37.7845%2C-122.404&amp;q=AMC+Metreon+16&amp;address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103">AMC Metreon 16</a><span class="addr">135 4th Street Suite #3000, San Francisco, CA 94103</span></th><td class="num">1</td><td class="num">2026-09-11</td><td class="num">18 of 419</td><td class="num hit">1</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where the empty seats are</h2>
+    <p>Each bar is one row, screen at the top, counting every seat still free
+    across all remaining showtimes. The pattern is the whole problem: the front
+    rows go unsold every single show, and everything from the middle back is
+    gone. The outlined rows are the ones we want.</p>
+    <div class="maps"><figure class="rowmap"><figcaption>Regal Hacienda Crossings</figcaption><p class="screen">screen</p><ol class="rows"><li class="rowline"><span class="rl">A</span><span class="bar"><i style="width:100%"></i></span><span class="rn">1257</span></li><li class="rowline"><span class="rl">B</span><span class="bar"><i style="width:12.6%"></i></span><span class="rn">158</span></li><li class="rowline"><span class="rl">C</span><span class="bar"><i style="width:2.4%"></i></span><span class="rn">30</span></li><li class="rowline empty"><span class="rl">D</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline"><span class="rl">E</span><span class="bar"><i style="width:0.2%"></i></span><span class="rn">2</span></li><li class="rowline target empty"><span class="rl">F</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline target empty"><span class="rl">G</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">H</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">I</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li></ol></figure><figure class="rowmap"><figcaption>AMC Metreon 16</figcaption><p class="screen">screen</p><ol class="rows"><li class="rowline"><span class="rl">A</span><span class="bar"><i style="width:100%"></i></span><span class="rn">761</span></li><li class="rowline"><span class="rl">B</span><span class="bar"><i style="width:50.5%"></i></span><span class="rn">384</span></li><li class="rowline"><span class="rl">C</span><span class="bar"><i style="width:2.9%"></i></span><span class="rn">22</span></li><li class="rowline empty"><span class="rl">D</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">E</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">F</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">G</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline empty"><span class="rl">H</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline target empty"><span class="rl">J</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline target empty"><span class="rl">K</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline target empty"><span class="rl">L</span><span class="bar"><i style="width:0%"></i></span><span class="rn">0</span></li><li class="rowline target"><span class="rl">M</span><span class="bar"><i style="width:0.1%"></i></span><span class="rn">1</span></li><li class="rowline"><span class="rl">N</span><span class="bar"><i style="width:0.1%"></i></span><span class="rn">1</span></li></ol></figure></div>
+  </section>
+
+  <section>
+    <h2>What counts as a match</h2>
+    <div class="target">
+      <p>row F or G at Regal Hacienda Crossings; row J or K or L or M at AMC Metreon 16 &mdash; middle 8 seats, 2 together &mdash; wheelchair spaces and companion seats excluded.</p>
+    </div>
+    <p style="margin-top:1rem">Those last two look available in the seat map but
+    are not general seating. At one of these theaters every free seat in a whole
+    row turned out to be one or the other, which makes an auditorium look far
+    emptier than it is.</p>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><strong>Every 15 minutes</strong> it asks both theaters whether they
+      have published showtimes past the last date it knows about. Theaters load
+      their schedule about a week ahead, so when the next week drops the entire
+      auditorium goes on sale at once. That is the best shot at good seats, and
+      it does not last long.</li>
+      <li><strong>Every 2 hours</strong> it reads the seat map of every
+      remaining showtime and looks for two free seats next to each other in the
+      middle of the rows we want. Since those rows are completely sold, anything
+      appearing there is a cancellation worth moving on.</li>
+      <li><strong>It re-reads the schedule each time</strong> rather than
+      trusting a stored copy, because showtimes shift and get added mid-week. A
+      fixed list would have gone stale within days.</li>
+      <li><strong>When it finds something</strong> a notification fires naming
+      the theater, showtime and exact seat numbers, and the ticket link is
+      copied ready to paste.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Worth knowing</h2>
+    <p><strong>It does not buy anything.</strong> A person still picks the seats
+    and enters the card, so nothing gets charged without a look first.</p>
+    <p><strong>The run might just end.</strong> The last days listed above may
+    be the end of the 70mm engagement rather than the end of the loaded
+    schedule. If no new dates ever appear, there is nothing to catch, and the
+    page will say so.</p>
+    <p><strong>This page rebuilds itself every two hours</strong> from a
+    scheduled job, so it stays current on its own. The alerting half runs on a
+    laptop, which has to be awake to shout.</p>
+  </section>
+
+  <footer>
+    <span>Page generated <time class="ts mono" datetime="2026-09-02T02:42:19-07:00">Sep 2, 2026 at 2:42 AM PDT</time></span>
+    <span>Seat maps last read <time class="ts mono" datetime="2026-09-01T17:33:37-07:00">Sep 1, 5:33 PM PDT</time></span>
+    <span>Source and setup at <a href="https://github.com/edespino/fandango-monitor">github.com/edespino/fandango-monitor</a>, licensed <a href="https://github.com/edespino/fandango-monitor/blob/main/LICENSE">Apache 2.0</a></span>
+  </footer>
+</div>
+<script>
+  // Timestamps are written in the monitor's timezone; show them in the
+  // reader's instead. Falls back to the rendered text if anything is off.
+  for (const el of document.querySelectorAll("time.ts[datetime]")) {
+    const stamp = el.getAttribute("datetime");
+    if (!stamp) continue;
+    const when = new Date(stamp);
+    if (isNaN(when.getTime())) continue;
+    el.textContent = when.toLocaleString(undefined, {
+      month: "short", day: "numeric", hour: "numeric",
+      minute: "2-digit", timeZoneName: "short"
+    });
+  }
+</script>
+</body>
+</html>

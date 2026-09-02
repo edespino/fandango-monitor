@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Status page states</title>
+<style>
+  :root{color-scheme:light dark}
+  body{margin:0;padding:2rem 1.25rem 4rem;background:#14110E;color:#E9E3D7;
+       font:15px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace}
+  .wrap{max-width:70rem;margin:0 auto;display:flex;flex-direction:column;gap:2.5rem}
+  h1{font-size:1.2rem;letter-spacing:.12em;text-transform:uppercase;margin:0}
+  .note{color:#97A0A3;margin:.4rem 0 0;max-width:44rem;font-size:.85rem}
+  h2{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+     color:#E0A055;margin:0 0 .6rem}
+  iframe{width:100%;height:44rem;border:1px solid #332C26;background:#F2EDE3}
+  a{color:#E0A055}
+  p{margin:.5rem 0 0;font-size:.8rem}
+</style></head>
+<body><div class="wrap">
+<header>
+  <h1>Status page states</h1>
+  <p class="note">Every state the page can be in, built from the real seat-map
+  fixtures through the real template. Synthetic throughout: no theater has
+  these seats. Regenerate with <code>python3 preview.py</code>.</p>
+</header>
+<section><h2>Waiting — nothing found</h2><iframe src="waiting.html" title="Waiting — nothing found" loading="lazy"></iframe><p><a href="waiting.html">open on its own</a></p></section><section><h2>One pair, dead centre</h2><iframe src="hit-centre.html" title="One pair, dead centre" loading="lazy"></iframe><p><a href="hit-centre.html">open on its own</a></p></section><section><h2>One pair, off centre but still matching</h2><iframe src="hit-edge.html" title="One pair, off centre but still matching" loading="lazy"></iframe><p><a href="hit-edge.html">open on its own</a></p></section><section><h2>Two pairs, both theaters</h2><iframe src="hit-multiple.html" title="Two pairs, both theaters" loading="lazy"></iframe><p><a href="hit-multiple.html">open on its own</a></p></section><section><h2>Before the first sweep — no row data</h2><iframe src="cold.html" title="Before the first sweep — no row data" loading="lazy"></iframe><p><a href="cold.html">open on its own</a></p></section>
+</div></body></html>

@@ -272,6 +272,23 @@ seeing the film with. (On a fork, turn that on under Settings → Pages.)
 The workflow owns that file. Running `fandango_monitor.py` by hand rewrites it
 too, so pass `--no-report` locally unless you mean to replace it.
 
+### Looking at the page in states it is rarely in
+
+```sh
+python3 preview.py
+```
+
+The page is almost always in one state — nothing found — which makes the
+others hard to check without waiting for a theater to do something. This
+renders them all through the real template from the real seat-map fixtures,
+into `docs/preview/`, published alongside the live page:
+
+**https://edespino.github.io/fandango-monitor/preview/**
+
+Every pair shown is one the monitor would genuinely alert on; the generator
+refuses to place a pair outside the centre window rather than illustrate
+something that could never happen. The pages are synthetic and say so.
+
 ### Running everything on one machine instead
 
 To skip Actions entirely: delete `.github/workflows/status.yml`, install
@@ -300,6 +317,7 @@ template.html         status page template
 test_monitor.py       tests
 fixtures/             real API responses, used by the tests
 healthcheck.py        is any of this actually running?
+preview.py            render every page state for looking at
 imessage_watch.py     the driver: runs the workflow, texts you
 publish.sh            all-on-one-machine alternative to the workflow
 docs/index.html       generated status page
