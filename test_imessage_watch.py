@@ -22,12 +22,25 @@ class Describe(unittest.TestCase):
         self.assertIn("G16+G17", message)
         self.assertIn("AMC Metreon 16", message)
 
+    NAMES = {"AAOPK": "Regal Hacienda Crossings", "AANEM": "AMC Metreon 16"}
+
     def test_reports_dates_extending(self):
         after = {"hits": [], "last_day": {"AAOPK": "2026-09-23", "AANEM": "2026-09-11"}}
-        message = w.describe(after, BEFORE)
+        message = w.describe(after, BEFORE, self.NAMES)
         self.assertIn("2026-09-23", message)
+        self.assertIn("Regal Hacienda Crossings", message)
+        self.assertNotIn("Metreon", message)
+
+    def test_theater_codes_never_reach_the_reader(self):
+        # "New dates at AAOPK" means nothing on a phone.
+        after = {"hits": [], "last_day": {"AAOPK": "2026-09-23", "AANEM": "2026-09-11"}}
+        message = w.describe(after, BEFORE, self.NAMES)
+        self.assertNotIn("AAOPK", message)
+
+    def test_falls_back_to_the_code_if_the_name_is_unknown(self):
+        after = {"hits": [], "last_day": {"AAOPK": "2026-09-23", "AANEM": "2026-09-11"}}
+        message = w.describe(after, BEFORE, {})
         self.assertIn("AAOPK", message)
-        self.assertNotIn("AANEM", message)
 
     def test_a_hit_is_not_repeated(self):
         hit = "AMC Metreon 16|2026-09-18|6:00 PM|G16+G17"

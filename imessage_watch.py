@@ -164,7 +164,10 @@ def interesting(status) -> dict:
     }
 
 
-def describe(now: dict, before: dict) -> str | None:
+def describe(now: dict, before: dict, names: dict | None = None) -> str | None:
+    """Compose the text. Theater codes never appear: they mean nothing to
+    someone reading this on a phone."""
+    names = names or {}
     lines = []
     for hit in [h for h in now["hits"] if h not in (before.get("hits") or [])]:
         theater, day, time, seats = hit.split("|")
@@ -172,7 +175,8 @@ def describe(now: dict, before: dict) -> str | None:
     for code, day in now["last_day"].items():
         was = (before.get("last_day") or {}).get(code)
         if was and day > was:
-            lines.append(f"New dates at {code}: now through {day} (was {was})")
+            lines.append(f"New dates at {names.get(code, code)}: "
+                         f"now through {day} (was {was})")
     return "\n".join(lines) if lines else None
 
 
@@ -233,7 +237,8 @@ def main():
     status = fetch_status()
     if status is not None:
         current = interesting(status)
-        change = describe(current, seen.get("interesting") or {})
+        names = {t["code"]: t["name"] for t in status.get("theaters") or []}
+        change = describe(current, seen.get("interesting") or {}, names)
         if change:
             messages.append(f"The Odyssey\n{change}\n{PAGE_URL}")
         seen["interesting"] = current
