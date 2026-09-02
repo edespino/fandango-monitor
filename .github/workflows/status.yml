@@ -3,14 +3,19 @@ name: Update status page
 on:
   schedule:
     # Hourly through waking hours, quiet overnight. Times are UTC; PT in
-    # the comments. Most invocations are the cheap date check (~4 requests);
+    # the comments. Most invocations are the cheap date check (~8 requests);
     # the expensive seat sweep gates itself on SEAT_SWEEP_INTERVAL and runs
     # roughly three times a day.
     #
+    # Minute 37, not 0. GitHub's scheduler is best effort with no guarantee,
+    # and the top of the hour is the most contended minute by a wide margin,
+    # so runs there are delayed or dropped. Five consecutive slots at :00
+    # produced nothing before this was changed.
+    #
     # Theaters are not known to publish overnight, so the small hours are
     # skipped. That is an estimate, not a documented window.
-    - cron: "0 13-23 * * *"  # 6am - 4pm PT
-    - cron: "0 0-6 * * *"    # 5pm - 11pm PT
+    - cron: "37 13-23 * * *"  # 6am - 4pm PT
+    - cron: "37 0-6 * * *"    # 5pm - 11pm PT
   workflow_dispatch:
     inputs:
       test_alert:
