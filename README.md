@@ -5,9 +5,12 @@
 Watches Fandango for a film's showtimes and tells you when two seats open up
 in the part of the auditorium you actually want to sit in.
 
-**Live status: https://edespino.github.io/fandango-monitor/** — rebuilt hourly,
-showing seats free in each row at both theaters and whether anything currently
-matches.
+> **Retired.** The tickets were bought, so the driver is uninstalled and
+> nothing runs. The page below is frozen at its last reading. To use this for
+> another film, change the config block in `fandango_monitor.py` and reinstall
+> the driver — see *How it is wired*.
+
+**Last status: https://edespino.github.io/fandango-monitor/**
 
 Built for a specific problem: *The Odyssey* is showing on 70mm IMAX film at two
 Bay Area theaters, every seat from the fourth row back is sold, and the only
