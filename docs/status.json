@@ -1,8 +1,1833 @@
 {
- "generated": "2026-09-03T15:16:40+00:00",
- "hits": [],
+ "generated": "2026-09-03T16:46:51+00:00",
+ "hits": [
+  {
+   "day": "2026-09-18",
+   "seats": [
+    "J15",
+    "J14"
+   ],
+   "strip": {
+    "offset": 52.8,
+    "row": "J",
+    "seats": [
+     {
+      "id": "J34",
+      "state": "free"
+     },
+     {
+      "id": "J33",
+      "state": "free"
+     },
+     {
+      "id": "J32",
+      "state": "free"
+     },
+     {
+      "id": "J31",
+      "state": "free"
+     },
+     {
+      "id": "J30",
+      "state": "free"
+     },
+     {
+      "id": "J29",
+      "state": "free"
+     },
+     {
+      "id": "J28",
+      "state": "free"
+     },
+     {
+      "id": "J27",
+      "state": "free"
+     },
+     {
+      "id": "J26",
+      "state": "free"
+     },
+     {
+      "id": "J25",
+      "state": "free"
+     },
+     {
+      "id": "J24",
+      "state": "free"
+     },
+     {
+      "id": "J23",
+      "state": "free"
+     },
+     {
+      "id": "J22",
+      "state": "free"
+     },
+     {
+      "id": "J21",
+      "state": "taken"
+     },
+     {
+      "id": "J20",
+      "state": "taken"
+     },
+     {
+      "id": "J19",
+      "state": "taken"
+     },
+     {
+      "id": "J18",
+      "state": "taken"
+     },
+     {
+      "id": "J17",
+      "state": "taken"
+     },
+     {
+      "id": "J16",
+      "state": "taken"
+     },
+     {
+      "id": "J15",
+      "state": "pick"
+     },
+     {
+      "id": "J14",
+      "state": "pick"
+     },
+     {
+      "id": "J13",
+      "state": "free"
+     },
+     {
+      "id": "J12",
+      "state": "free"
+     },
+     {
+      "id": "J11",
+      "state": "free"
+     },
+     {
+      "id": "J10",
+      "state": "free"
+     },
+     {
+      "id": "J9",
+      "state": "free"
+     },
+     {
+      "id": "J8",
+      "state": "free"
+     },
+     {
+      "id": "J7",
+      "state": "free"
+     },
+     {
+      "id": "J6",
+      "state": "free"
+     },
+     {
+      "id": "J5",
+      "state": "free"
+     },
+     {
+      "id": "J4",
+      "state": "free"
+     },
+     {
+      "id": "J3",
+      "state": "free"
+     },
+     {
+      "id": "J2",
+      "state": "free"
+     },
+     {
+      "id": "J1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock AM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-18%2B10%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-9f97795982c28db4be8255857f6415fe35f80dd6c35cc1c30409e3af6d9a06a0"
+  },
+  {
+   "day": "2026-09-19",
+   "seats": [
+    "K18",
+    "K17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "K",
+    "seats": [
+     {
+      "id": "K34",
+      "state": "free"
+     },
+     {
+      "id": "K33",
+      "state": "free"
+     },
+     {
+      "id": "K32",
+      "state": "free"
+     },
+     {
+      "id": "K31",
+      "state": "free"
+     },
+     {
+      "id": "K30",
+      "state": "free"
+     },
+     {
+      "id": "K29",
+      "state": "free"
+     },
+     {
+      "id": "K28",
+      "state": "free"
+     },
+     {
+      "id": "K27",
+      "state": "free"
+     },
+     {
+      "id": "K26",
+      "state": "free"
+     },
+     {
+      "id": "K25",
+      "state": "free"
+     },
+     {
+      "id": "K24",
+      "state": "free"
+     },
+     {
+      "id": "K23",
+      "state": "taken"
+     },
+     {
+      "id": "K22",
+      "state": "taken"
+     },
+     {
+      "id": "K21",
+      "state": "taken"
+     },
+     {
+      "id": "K20",
+      "state": "taken"
+     },
+     {
+      "id": "K19",
+      "state": "taken"
+     },
+     {
+      "id": "K18",
+      "state": "pick"
+     },
+     {
+      "id": "K17",
+      "state": "pick"
+     },
+     {
+      "id": "K16",
+      "state": "taken"
+     },
+     {
+      "id": "K15",
+      "state": "taken"
+     },
+     {
+      "id": "K14",
+      "state": "taken"
+     },
+     {
+      "id": "K13",
+      "state": "taken"
+     },
+     {
+      "id": "K12",
+      "state": "taken"
+     },
+     {
+      "id": "K11",
+      "state": "free"
+     },
+     {
+      "id": "K10",
+      "state": "free"
+     },
+     {
+      "id": "K9",
+      "state": "free"
+     },
+     {
+      "id": "K8",
+      "state": "free"
+     },
+     {
+      "id": "K7",
+      "state": "free"
+     },
+     {
+      "id": "K6",
+      "state": "free"
+     },
+     {
+      "id": "K5",
+      "state": "free"
+     },
+     {
+      "id": "K4",
+      "state": "free"
+     },
+     {
+      "id": "K3",
+      "state": "free"
+     },
+     {
+      "id": "K2",
+      "state": "free"
+     },
+     {
+      "id": "K1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-19%2B22%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-21c697a302a1d82131c6a51b4a743c7652646750d5d9f07c1255e8baa851a0a8"
+  },
+  {
+   "day": "2026-09-20",
+   "seats": [
+    "L18",
+    "L17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "L",
+    "seats": [
+     {
+      "id": "L34",
+      "state": "free"
+     },
+     {
+      "id": "L33",
+      "state": "free"
+     },
+     {
+      "id": "L32",
+      "state": "free"
+     },
+     {
+      "id": "L31",
+      "state": "free"
+     },
+     {
+      "id": "L30",
+      "state": "free"
+     },
+     {
+      "id": "L29",
+      "state": "free"
+     },
+     {
+      "id": "L28",
+      "state": "free"
+     },
+     {
+      "id": "L27",
+      "state": "free"
+     },
+     {
+      "id": "L26",
+      "state": "free"
+     },
+     {
+      "id": "L25",
+      "state": "free"
+     },
+     {
+      "id": "L24",
+      "state": "free"
+     },
+     {
+      "id": "L23",
+      "state": "free"
+     },
+     {
+      "id": "L22",
+      "state": "free"
+     },
+     {
+      "id": "L21",
+      "state": "free"
+     },
+     {
+      "id": "L20",
+      "state": "free"
+     },
+     {
+      "id": "L19",
+      "state": "free"
+     },
+     {
+      "id": "L18",
+      "state": "pick"
+     },
+     {
+      "id": "L17",
+      "state": "pick"
+     },
+     {
+      "id": "L16",
+      "state": "free"
+     },
+     {
+      "id": "L15",
+      "state": "free"
+     },
+     {
+      "id": "L14",
+      "state": "free"
+     },
+     {
+      "id": "L13",
+      "state": "free"
+     },
+     {
+      "id": "L12",
+      "state": "free"
+     },
+     {
+      "id": "L11",
+      "state": "free"
+     },
+     {
+      "id": "L10",
+      "state": "free"
+     },
+     {
+      "id": "L9",
+      "state": "free"
+     },
+     {
+      "id": "L8",
+      "state": "free"
+     },
+     {
+      "id": "L7",
+      "state": "free"
+     },
+     {
+      "id": "L6",
+      "state": "free"
+     },
+     {
+      "id": "L5",
+      "state": "free"
+     },
+     {
+      "id": "L4",
+      "state": "free"
+     },
+     {
+      "id": "L3",
+      "state": "free"
+     },
+     {
+      "id": "L2",
+      "state": "free"
+     },
+     {
+      "id": "L1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-20%2B22%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-1bd3b814a5b3850759a3b11a44b9f189e11be4db836bba1d892f72081e16c1d0"
+  },
+  {
+   "day": "2026-09-25",
+   "seats": [
+    "L18",
+    "L17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "L",
+    "seats": [
+     {
+      "id": "L34",
+      "state": "free"
+     },
+     {
+      "id": "L33",
+      "state": "free"
+     },
+     {
+      "id": "L32",
+      "state": "free"
+     },
+     {
+      "id": "L31",
+      "state": "free"
+     },
+     {
+      "id": "L30",
+      "state": "free"
+     },
+     {
+      "id": "L29",
+      "state": "free"
+     },
+     {
+      "id": "L28",
+      "state": "free"
+     },
+     {
+      "id": "L27",
+      "state": "free"
+     },
+     {
+      "id": "L26",
+      "state": "free"
+     },
+     {
+      "id": "L25",
+      "state": "free"
+     },
+     {
+      "id": "L24",
+      "state": "free"
+     },
+     {
+      "id": "L23",
+      "state": "free"
+     },
+     {
+      "id": "L22",
+      "state": "free"
+     },
+     {
+      "id": "L21",
+      "state": "free"
+     },
+     {
+      "id": "L20",
+      "state": "taken"
+     },
+     {
+      "id": "L19",
+      "state": "taken"
+     },
+     {
+      "id": "L18",
+      "state": "pick"
+     },
+     {
+      "id": "L17",
+      "state": "pick"
+     },
+     {
+      "id": "L16",
+      "state": "taken"
+     },
+     {
+      "id": "L15",
+      "state": "free"
+     },
+     {
+      "id": "L14",
+      "state": "free"
+     },
+     {
+      "id": "L13",
+      "state": "free"
+     },
+     {
+      "id": "L12",
+      "state": "free"
+     },
+     {
+      "id": "L11",
+      "state": "free"
+     },
+     {
+      "id": "L10",
+      "state": "free"
+     },
+     {
+      "id": "L9",
+      "state": "free"
+     },
+     {
+      "id": "L8",
+      "state": "free"
+     },
+     {
+      "id": "L7",
+      "state": "free"
+     },
+     {
+      "id": "L6",
+      "state": "free"
+     },
+     {
+      "id": "L5",
+      "state": "free"
+     },
+     {
+      "id": "L4",
+      "state": "free"
+     },
+     {
+      "id": "L3",
+      "state": "free"
+     },
+     {
+      "id": "L2",
+      "state": "free"
+     },
+     {
+      "id": "L1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock AM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-25%2B10%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-a10d7c303b6bed06c5db17abeb498cf55b54fb49ff2eadfcbc4540c797fa38de"
+  },
+  {
+   "day": "2026-09-25",
+   "seats": [
+    "M20",
+    "M19"
+   ],
+   "strip": {
+    "offset": 35.2,
+    "row": "M",
+    "seats": [
+     {
+      "id": "M34",
+      "state": "free"
+     },
+     {
+      "id": "M33",
+      "state": "free"
+     },
+     {
+      "id": "M32",
+      "state": "free"
+     },
+     {
+      "id": "M31",
+      "state": "free"
+     },
+     {
+      "id": "M30",
+      "state": "free"
+     },
+     {
+      "id": "M29",
+      "state": "free"
+     },
+     {
+      "id": "M28",
+      "state": "free"
+     },
+     {
+      "id": "M27",
+      "state": "free"
+     },
+     {
+      "id": "M26",
+      "state": "free"
+     },
+     {
+      "id": "M25",
+      "state": "free"
+     },
+     {
+      "id": "M24",
+      "state": "free"
+     },
+     {
+      "id": "M23",
+      "state": "free"
+     },
+     {
+      "id": "M22",
+      "state": "free"
+     },
+     {
+      "id": "M21",
+      "state": "free"
+     },
+     {
+      "id": "M20",
+      "state": "pick"
+     },
+     {
+      "id": "M19",
+      "state": "pick"
+     },
+     {
+      "id": "M18",
+      "state": "taken"
+     },
+     {
+      "id": "M17",
+      "state": "taken"
+     },
+     {
+      "id": "M16",
+      "state": "free"
+     },
+     {
+      "id": "M15",
+      "state": "free"
+     },
+     {
+      "id": "M14",
+      "state": "free"
+     },
+     {
+      "id": "M13",
+      "state": "free"
+     },
+     {
+      "id": "M12",
+      "state": "free"
+     },
+     {
+      "id": "M11",
+      "state": "free"
+     },
+     {
+      "id": "M10",
+      "state": "free"
+     },
+     {
+      "id": "M9",
+      "state": "free"
+     },
+     {
+      "id": "M8",
+      "state": "free"
+     },
+     {
+      "id": "M7",
+      "state": "free"
+     },
+     {
+      "id": "M6",
+      "state": "free"
+     },
+     {
+      "id": "M5",
+      "state": "free"
+     },
+     {
+      "id": "M4",
+      "state": "free"
+     },
+     {
+      "id": "M3",
+      "state": "free"
+     },
+     {
+      "id": "M2",
+      "state": "free"
+     },
+     {
+      "id": "M1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-25%2B22%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-caffdc794ce9a33f222b15ef84d58c42e588d1391021ecef64c09cc9a7e45d57"
+  },
+  {
+   "day": "2026-09-26",
+   "seats": [
+    "K17",
+    "K16"
+   ],
+   "strip": {
+    "offset": 17.6,
+    "row": "K",
+    "seats": [
+     {
+      "id": "K34",
+      "state": "free"
+     },
+     {
+      "id": "K33",
+      "state": "free"
+     },
+     {
+      "id": "K32",
+      "state": "free"
+     },
+     {
+      "id": "K31",
+      "state": "free"
+     },
+     {
+      "id": "K30",
+      "state": "free"
+     },
+     {
+      "id": "K29",
+      "state": "free"
+     },
+     {
+      "id": "K28",
+      "state": "free"
+     },
+     {
+      "id": "K27",
+      "state": "free"
+     },
+     {
+      "id": "K26",
+      "state": "free"
+     },
+     {
+      "id": "K25",
+      "state": "free"
+     },
+     {
+      "id": "K24",
+      "state": "free"
+     },
+     {
+      "id": "K23",
+      "state": "free"
+     },
+     {
+      "id": "K22",
+      "state": "free"
+     },
+     {
+      "id": "K21",
+      "state": "taken"
+     },
+     {
+      "id": "K20",
+      "state": "taken"
+     },
+     {
+      "id": "K19",
+      "state": "taken"
+     },
+     {
+      "id": "K18",
+      "state": "taken"
+     },
+     {
+      "id": "K17",
+      "state": "pick"
+     },
+     {
+      "id": "K16",
+      "state": "pick"
+     },
+     {
+      "id": "K15",
+      "state": "taken"
+     },
+     {
+      "id": "K14",
+      "state": "taken"
+     },
+     {
+      "id": "K13",
+      "state": "taken"
+     },
+     {
+      "id": "K12",
+      "state": "free"
+     },
+     {
+      "id": "K11",
+      "state": "free"
+     },
+     {
+      "id": "K10",
+      "state": "free"
+     },
+     {
+      "id": "K9",
+      "state": "free"
+     },
+     {
+      "id": "K8",
+      "state": "free"
+     },
+     {
+      "id": "K7",
+      "state": "free"
+     },
+     {
+      "id": "K6",
+      "state": "free"
+     },
+     {
+      "id": "K5",
+      "state": "free"
+     },
+     {
+      "id": "K4",
+      "state": "free"
+     },
+     {
+      "id": "K3",
+      "state": "free"
+     },
+     {
+      "id": "K2",
+      "state": "free"
+     },
+     {
+      "id": "K1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-26%2B22%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-f65f1544bdcb0ede0f9309225dced7a99255b52a41770d39fb82a8e71657e27c"
+  },
+  {
+   "day": "2026-09-27",
+   "seats": [
+    "J18",
+    "J17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "J",
+    "seats": [
+     {
+      "id": "J34",
+      "state": "free"
+     },
+     {
+      "id": "J33",
+      "state": "free"
+     },
+     {
+      "id": "J32",
+      "state": "free"
+     },
+     {
+      "id": "J31",
+      "state": "free"
+     },
+     {
+      "id": "J30",
+      "state": "free"
+     },
+     {
+      "id": "J29",
+      "state": "free"
+     },
+     {
+      "id": "J28",
+      "state": "free"
+     },
+     {
+      "id": "J27",
+      "state": "free"
+     },
+     {
+      "id": "J26",
+      "state": "free"
+     },
+     {
+      "id": "J25",
+      "state": "free"
+     },
+     {
+      "id": "J24",
+      "state": "free"
+     },
+     {
+      "id": "J23",
+      "state": "free"
+     },
+     {
+      "id": "J22",
+      "state": "free"
+     },
+     {
+      "id": "J21",
+      "state": "free"
+     },
+     {
+      "id": "J20",
+      "state": "free"
+     },
+     {
+      "id": "J19",
+      "state": "free"
+     },
+     {
+      "id": "J18",
+      "state": "pick"
+     },
+     {
+      "id": "J17",
+      "state": "pick"
+     },
+     {
+      "id": "J16",
+      "state": "free"
+     },
+     {
+      "id": "J15",
+      "state": "free"
+     },
+     {
+      "id": "J14",
+      "state": "free"
+     },
+     {
+      "id": "J13",
+      "state": "free"
+     },
+     {
+      "id": "J12",
+      "state": "free"
+     },
+     {
+      "id": "J11",
+      "state": "free"
+     },
+     {
+      "id": "J10",
+      "state": "free"
+     },
+     {
+      "id": "J9",
+      "state": "free"
+     },
+     {
+      "id": "J8",
+      "state": "free"
+     },
+     {
+      "id": "J7",
+      "state": "free"
+     },
+     {
+      "id": "J6",
+      "state": "free"
+     },
+     {
+      "id": "J5",
+      "state": "free"
+     },
+     {
+      "id": "J4",
+      "state": "free"
+     },
+     {
+      "id": "J3",
+      "state": "free"
+     },
+     {
+      "id": "J2",
+      "state": "free"
+     },
+     {
+      "id": "J1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-27%2B22%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-3bad3bbdc6dc5e60263cb52d74d6b40572471d88f07c542d6977f915ed7036f4"
+  },
+  {
+   "day": "2026-09-28",
+   "seats": [
+    "J18",
+    "J17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "J",
+    "seats": [
+     {
+      "id": "J34",
+      "state": "free"
+     },
+     {
+      "id": "J33",
+      "state": "free"
+     },
+     {
+      "id": "J32",
+      "state": "free"
+     },
+     {
+      "id": "J31",
+      "state": "free"
+     },
+     {
+      "id": "J30",
+      "state": "free"
+     },
+     {
+      "id": "J29",
+      "state": "free"
+     },
+     {
+      "id": "J28",
+      "state": "free"
+     },
+     {
+      "id": "J27",
+      "state": "free"
+     },
+     {
+      "id": "J26",
+      "state": "free"
+     },
+     {
+      "id": "J25",
+      "state": "free"
+     },
+     {
+      "id": "J24",
+      "state": "free"
+     },
+     {
+      "id": "J23",
+      "state": "free"
+     },
+     {
+      "id": "J22",
+      "state": "free"
+     },
+     {
+      "id": "J21",
+      "state": "free"
+     },
+     {
+      "id": "J20",
+      "state": "free"
+     },
+     {
+      "id": "J19",
+      "state": "free"
+     },
+     {
+      "id": "J18",
+      "state": "pick"
+     },
+     {
+      "id": "J17",
+      "state": "pick"
+     },
+     {
+      "id": "J16",
+      "state": "free"
+     },
+     {
+      "id": "J15",
+      "state": "free"
+     },
+     {
+      "id": "J14",
+      "state": "free"
+     },
+     {
+      "id": "J13",
+      "state": "free"
+     },
+     {
+      "id": "J12",
+      "state": "free"
+     },
+     {
+      "id": "J11",
+      "state": "free"
+     },
+     {
+      "id": "J10",
+      "state": "free"
+     },
+     {
+      "id": "J9",
+      "state": "free"
+     },
+     {
+      "id": "J8",
+      "state": "free"
+     },
+     {
+      "id": "J7",
+      "state": "free"
+     },
+     {
+      "id": "J6",
+      "state": "free"
+     },
+     {
+      "id": "J5",
+      "state": "free"
+     },
+     {
+      "id": "J4",
+      "state": "free"
+     },
+     {
+      "id": "J3",
+      "state": "free"
+     },
+     {
+      "id": "J2",
+      "state": "free"
+     },
+     {
+      "id": "J1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-28%2B22%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-905e9c0d358313b9800067741cf2fd037cd96df8fa890c27e747612bbbf9b5e0"
+  },
+  {
+   "day": "2026-09-29",
+   "seats": [
+    "M18",
+    "M17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "M",
+    "seats": [
+     {
+      "id": "M34",
+      "state": "free"
+     },
+     {
+      "id": "M33",
+      "state": "free"
+     },
+     {
+      "id": "M32",
+      "state": "free"
+     },
+     {
+      "id": "M31",
+      "state": "free"
+     },
+     {
+      "id": "M30",
+      "state": "free"
+     },
+     {
+      "id": "M29",
+      "state": "free"
+     },
+     {
+      "id": "M28",
+      "state": "free"
+     },
+     {
+      "id": "M27",
+      "state": "free"
+     },
+     {
+      "id": "M26",
+      "state": "free"
+     },
+     {
+      "id": "M25",
+      "state": "free"
+     },
+     {
+      "id": "M24",
+      "state": "free"
+     },
+     {
+      "id": "M23",
+      "state": "free"
+     },
+     {
+      "id": "M22",
+      "state": "free"
+     },
+     {
+      "id": "M21",
+      "state": "free"
+     },
+     {
+      "id": "M20",
+      "state": "free"
+     },
+     {
+      "id": "M19",
+      "state": "free"
+     },
+     {
+      "id": "M18",
+      "state": "pick"
+     },
+     {
+      "id": "M17",
+      "state": "pick"
+     },
+     {
+      "id": "M16",
+      "state": "taken"
+     },
+     {
+      "id": "M15",
+      "state": "taken"
+     },
+     {
+      "id": "M14",
+      "state": "free"
+     },
+     {
+      "id": "M13",
+      "state": "free"
+     },
+     {
+      "id": "M12",
+      "state": "free"
+     },
+     {
+      "id": "M11",
+      "state": "free"
+     },
+     {
+      "id": "M10",
+      "state": "free"
+     },
+     {
+      "id": "M9",
+      "state": "free"
+     },
+     {
+      "id": "M8",
+      "state": "free"
+     },
+     {
+      "id": "M7",
+      "state": "free"
+     },
+     {
+      "id": "M6",
+      "state": "free"
+     },
+     {
+      "id": "M5",
+      "state": "free"
+     },
+     {
+      "id": "M4",
+      "state": "free"
+     },
+     {
+      "id": "M3",
+      "state": "free"
+     },
+     {
+      "id": "M2",
+      "state": "free"
+     },
+     {
+      "id": "M1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-29%2B22%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-a86cfc951055db38bfaf6806caf58b0e627bc682bfe6b072c5cd8f860029b06a"
+  },
+  {
+   "day": "2026-09-29",
+   "seats": [
+    "M18",
+    "M17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "M",
+    "seats": [
+     {
+      "id": "M34",
+      "state": "free"
+     },
+     {
+      "id": "M33",
+      "state": "free"
+     },
+     {
+      "id": "M32",
+      "state": "free"
+     },
+     {
+      "id": "M31",
+      "state": "free"
+     },
+     {
+      "id": "M30",
+      "state": "free"
+     },
+     {
+      "id": "M29",
+      "state": "free"
+     },
+     {
+      "id": "M28",
+      "state": "free"
+     },
+     {
+      "id": "M27",
+      "state": "free"
+     },
+     {
+      "id": "M26",
+      "state": "free"
+     },
+     {
+      "id": "M25",
+      "state": "free"
+     },
+     {
+      "id": "M24",
+      "state": "free"
+     },
+     {
+      "id": "M23",
+      "state": "free"
+     },
+     {
+      "id": "M22",
+      "state": "free"
+     },
+     {
+      "id": "M21",
+      "state": "free"
+     },
+     {
+      "id": "M20",
+      "state": "free"
+     },
+     {
+      "id": "M19",
+      "state": "free"
+     },
+     {
+      "id": "M18",
+      "state": "pick"
+     },
+     {
+      "id": "M17",
+      "state": "pick"
+     },
+     {
+      "id": "M16",
+      "state": "free"
+     },
+     {
+      "id": "M15",
+      "state": "free"
+     },
+     {
+      "id": "M14",
+      "state": "free"
+     },
+     {
+      "id": "M13",
+      "state": "free"
+     },
+     {
+      "id": "M12",
+      "state": "free"
+     },
+     {
+      "id": "M11",
+      "state": "free"
+     },
+     {
+      "id": "M10",
+      "state": "free"
+     },
+     {
+      "id": "M9",
+      "state": "free"
+     },
+     {
+      "id": "M8",
+      "state": "free"
+     },
+     {
+      "id": "M7",
+      "state": "free"
+     },
+     {
+      "id": "M6",
+      "state": "free"
+     },
+     {
+      "id": "M5",
+      "state": "free"
+     },
+     {
+      "id": "M4",
+      "state": "free"
+     },
+     {
+      "id": "M3",
+      "state": "free"
+     },
+     {
+      "id": "M2",
+      "state": "free"
+     },
+     {
+      "id": "M1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "2 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-29%2B14%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-b17d1319c75b83aa711929126a6a205529c99b741bec3c07774c1401b4f9274e"
+  },
+  {
+   "day": "2026-09-30",
+   "seats": [
+    "J18",
+    "J17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "J",
+    "seats": [
+     {
+      "id": "J34",
+      "state": "free"
+     },
+     {
+      "id": "J33",
+      "state": "free"
+     },
+     {
+      "id": "J32",
+      "state": "free"
+     },
+     {
+      "id": "J31",
+      "state": "free"
+     },
+     {
+      "id": "J30",
+      "state": "free"
+     },
+     {
+      "id": "J29",
+      "state": "free"
+     },
+     {
+      "id": "J28",
+      "state": "free"
+     },
+     {
+      "id": "J27",
+      "state": "free"
+     },
+     {
+      "id": "J26",
+      "state": "free"
+     },
+     {
+      "id": "J25",
+      "state": "free"
+     },
+     {
+      "id": "J24",
+      "state": "free"
+     },
+     {
+      "id": "J23",
+      "state": "free"
+     },
+     {
+      "id": "J22",
+      "state": "free"
+     },
+     {
+      "id": "J21",
+      "state": "free"
+     },
+     {
+      "id": "J20",
+      "state": "free"
+     },
+     {
+      "id": "J19",
+      "state": "free"
+     },
+     {
+      "id": "J18",
+      "state": "pick"
+     },
+     {
+      "id": "J17",
+      "state": "pick"
+     },
+     {
+      "id": "J16",
+      "state": "free"
+     },
+     {
+      "id": "J15",
+      "state": "free"
+     },
+     {
+      "id": "J14",
+      "state": "free"
+     },
+     {
+      "id": "J13",
+      "state": "free"
+     },
+     {
+      "id": "J12",
+      "state": "free"
+     },
+     {
+      "id": "J11",
+      "state": "free"
+     },
+     {
+      "id": "J10",
+      "state": "free"
+     },
+     {
+      "id": "J9",
+      "state": "free"
+     },
+     {
+      "id": "J8",
+      "state": "free"
+     },
+     {
+      "id": "J7",
+      "state": "free"
+     },
+     {
+      "id": "J6",
+      "state": "free"
+     },
+     {
+      "id": "J5",
+      "state": "free"
+     },
+     {
+      "id": "J4",
+      "state": "free"
+     },
+     {
+      "id": "J3",
+      "state": "free"
+     },
+     {
+      "id": "J2",
+      "state": "free"
+     },
+     {
+      "id": "J1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "10 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-30%2B22%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-4728dc8ec52c8bb79fa7542a707ea73b99d1c357db6dbb14cdf93080e5aa60e3"
+  },
+  {
+   "day": "2026-09-30",
+   "seats": [
+    "J18",
+    "J17"
+   ],
+   "strip": {
+    "offset": 0.0,
+    "row": "J",
+    "seats": [
+     {
+      "id": "J34",
+      "state": "free"
+     },
+     {
+      "id": "J33",
+      "state": "free"
+     },
+     {
+      "id": "J32",
+      "state": "free"
+     },
+     {
+      "id": "J31",
+      "state": "free"
+     },
+     {
+      "id": "J30",
+      "state": "free"
+     },
+     {
+      "id": "J29",
+      "state": "free"
+     },
+     {
+      "id": "J28",
+      "state": "free"
+     },
+     {
+      "id": "J27",
+      "state": "free"
+     },
+     {
+      "id": "J26",
+      "state": "free"
+     },
+     {
+      "id": "J25",
+      "state": "free"
+     },
+     {
+      "id": "J24",
+      "state": "free"
+     },
+     {
+      "id": "J23",
+      "state": "free"
+     },
+     {
+      "id": "J22",
+      "state": "free"
+     },
+     {
+      "id": "J21",
+      "state": "free"
+     },
+     {
+      "id": "J20",
+      "state": "free"
+     },
+     {
+      "id": "J19",
+      "state": "free"
+     },
+     {
+      "id": "J18",
+      "state": "pick"
+     },
+     {
+      "id": "J17",
+      "state": "pick"
+     },
+     {
+      "id": "J16",
+      "state": "free"
+     },
+     {
+      "id": "J15",
+      "state": "free"
+     },
+     {
+      "id": "J14",
+      "state": "free"
+     },
+     {
+      "id": "J13",
+      "state": "free"
+     },
+     {
+      "id": "J12",
+      "state": "free"
+     },
+     {
+      "id": "J11",
+      "state": "free"
+     },
+     {
+      "id": "J10",
+      "state": "free"
+     },
+     {
+      "id": "J9",
+      "state": "free"
+     },
+     {
+      "id": "J8",
+      "state": "free"
+     },
+     {
+      "id": "J7",
+      "state": "free"
+     },
+     {
+      "id": "J6",
+      "state": "free"
+     },
+     {
+      "id": "J5",
+      "state": "free"
+     },
+     {
+      "id": "J4",
+      "state": "free"
+     },
+     {
+      "id": "J3",
+      "state": "free"
+     },
+     {
+      "id": "J2",
+      "state": "free"
+     },
+     {
+      "id": "J1",
+      "state": "free"
+     }
+    ]
+   },
+   "theater": "AMC Metreon 16",
+   "time": "2 o'clock PM",
+   "url": "https://tickets.fandango.com/transaction/ticketing/mobile/jump.aspx?sdate=2026-09-30%2B14%3A00&from=mov_det_showtimes&source=MobileWeb&mid=241386&tid=AANEM&dfam=webbrowser&showtimehashcode=v2-e8ca127f2d2c34ddd48f45fba2e143b58d4a1dc136dcc88352fa998f49c6c69a"
+  }
+ ],
  "movie": "The Odyssey",
- "swept": "2026-09-03T15:16:40+00:00",
+ "swept": "2026-09-03T16:46:51+00:00",
  "target": {
   "centre": 8,
   "party": 2,
@@ -25,7 +1850,7 @@
    "capacity": 243,
    "code": "AAOPK",
    "fandango": "https://www.fandango.com/regal-hacienda-crossings-screenx-imax-and-rpx-aaopk/theater-page",
-   "free": 1206,
+   "free": 1207,
    "last_day": "2026-09-16",
    "map": "https://maps.apple.com/?ll=37.7062%2C-121.8866&q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568",
    "matched": 0,
@@ -38,13 +1863,13 @@
    "capacity": 419,
    "code": "AANEM",
    "fandango": "https://www.fandango.com/amc-metreon-16-aanem/theater-page",
-   "free": 927,
-   "last_day": "2026-09-28",
+   "free": 8010,
+   "last_day": "2026-09-30",
    "map": "https://maps.apple.com/?ll=37.7845%2C-122.404&q=AMC+Metreon+16&address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103",
-   "matched": 0,
+   "matched": 12,
    "name": "AMC Metreon 16",
-   "per_show": 19,
-   "shows": 49
+   "per_show": 118,
+   "shows": 68
   }
  ]
 }
