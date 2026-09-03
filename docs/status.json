@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02T23:00:04+00:00",
+ "generated": "2026-09-03T00:10:31+00:00",
  "hits": [],
  "movie": "The Odyssey",
  "swept": "2026-09-02T23:00:04+00:00",
@@ -25,26 +25,26 @@
    "capacity": 243,
    "code": "AAOPK",
    "fandango": "https://www.fandango.com/regal-hacienda-crossings-screenx-imax-and-rpx-aaopk/theater-page",
-   "free": 1275,
+   "free": 1230,
    "last_day": "2026-09-16",
    "map": "https://maps.apple.com/?ll=37.7062%2C-121.8866&q=Regal+Hacienda+Crossings+ScreenX%2C+IMAX+%26+RPX&address=5000+Dublin+Blvd.%2C+Dublin%2C+CA+94568",
    "matched": 0,
    "name": "Regal Hacienda Crossings",
    "per_show": 22,
-   "shows": 57
+   "shows": 55
   },
   {
    "address": "135 4th Street Suite #3000, San Francisco, CA 94103",
    "capacity": 419,
    "code": "AANEM",
    "fandango": "https://www.fandango.com/amc-metreon-16-aanem/theater-page",
-   "free": 1010,
+   "free": 964,
    "last_day": "2026-09-11",
    "map": "https://maps.apple.com/?ll=37.7845%2C-122.404&q=AMC+Metreon+16&address=135+4th+Street+Suite+%233000%2C+San+Francisco%2C+CA+94103",
    "matched": 0,
    "name": "AMC Metreon 16",
-   "per_show": 25,
-   "shows": 40
+   "per_show": 27,
+   "shows": 36
   }
  ]
 }
